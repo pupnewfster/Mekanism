@@ -28,6 +28,7 @@ public class SpecialColors {
     public static final ColorRegistryObject TAB_FACTORY_SORT = GUI_OBJECTS.register();
     public static final ColorRegistryObject TAB_QIO_FREQUENCY = GUI_OBJECTS.register();
     public static final ColorRegistryObject TAB_RESIZE_CONTROLS = GUI_OBJECTS.register();
+    public static final ColorRegistryObject TAB_CRAFTING_WINDOW = GUI_OBJECTS.register();
 
     public static final ColorRegistryObject TEXT_TITLE = GUI_TEXT.register();
     public static final ColorRegistryObject TEXT_HEADING = GUI_TEXT.register();

@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 public abstract class GuiWindowCreatorTab<ELEMENT extends GuiWindowCreatorTab<ELEMENT>> extends GuiInsetElement<TileEntityMekanism> {
 
     @Nonnull
-    private final Supplier<ELEMENT> elementSupplier;
+    private Supplier<ELEMENT> elementSupplier;
 
     public GuiWindowCreatorTab(ResourceLocation overlay, IGuiWrapper gui, TileEntityMekanism tile, int x, int y, int height, int innerSize, boolean left,
           @Nonnull Supplier<ELEMENT> elementSupplier) {
@@ -20,12 +20,42 @@ public abstract class GuiWindowCreatorTab<ELEMENT extends GuiWindowCreatorTab<EL
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void func_230982_a_(double mouseX, double mouseY) {
         GuiWindow window = createWindow();
-        window.setListenerTab(elementSupplier);
-        active = false;
+        window.setTabListeners(getCloseListener(), getReAttachListener());
+        disableTab();
         guiObj.addWindow(window);
     }
 
-    public abstract GuiWindow createWindow();
+    @Nonnull
+    protected final Supplier<ELEMENT> getElementSupplier() {
+        return elementSupplier;
+    }
+
+    public void adoptWindows(int prevLeft, int prevTop, GuiWindow...windows) {
+        int left = guiObj.getLeft();
+        int top = guiObj.getTop();
+        for (GuiWindow window : windows) {
+            Runnable reattachListener = getReAttachListener();
+            //TODO: Fix the windows after being adopted not being able to be closed??
+            window.setTabListeners(getCloseListener(), reattachListener);
+            //TODO: Fix positioning
+            //reattachListener.run();
+            window.resize(prevLeft, prevTop, left, top);
+        }
+    }
+
+    protected void disableTab() {
+        field_230693_o_ = false;
+    }
+
+    protected Runnable getCloseListener() {
+        return () -> elementSupplier.get().field_230693_o_ = true;
+    }
+
+    protected Runnable getReAttachListener() {
+        return () -> elementSupplier.get().disableTab();
+    }
+
+    protected abstract GuiWindow createWindow();
 }
