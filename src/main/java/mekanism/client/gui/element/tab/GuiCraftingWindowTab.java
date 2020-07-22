@@ -23,7 +23,7 @@ public class GuiCraftingWindowTab extends GuiWindowCreatorTab<GuiCraftingWindowT
     }
 
     @Override
-    public void func_230443_a_(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
+    public void renderToolTip(@Nonnull MatrixStack matrix, int mouseX, int mouseY) {
         //TODO: Should this have its own translation key
         //TODO: Make it have a "subtext" part of the tooltip for displaying how many more windows can be created
         displayTooltip(matrix, MekanismLang.CRAFTING.translate(), mouseX, mouseY);
@@ -41,7 +41,7 @@ public class GuiCraftingWindowTab extends GuiWindowCreatorTab<GuiCraftingWindowT
             tab.currentWindows--;
             if (tab.currentWindows < MAX_WINDOWS) {
                 //If we have less than the max number of windows re-enable the tab
-                tab.field_230693_o_ = true;
+                tab.active = true;
             }
         };
     }

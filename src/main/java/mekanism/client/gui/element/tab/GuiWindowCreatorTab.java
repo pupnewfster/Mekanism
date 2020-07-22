@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 public abstract class GuiWindowCreatorTab<ELEMENT extends GuiWindowCreatorTab<ELEMENT>> extends GuiInsetElement<TileEntityMekanism> {
 
     @Nonnull
-    private Supplier<ELEMENT> elementSupplier;
+    private final Supplier<ELEMENT> elementSupplier;
 
     public GuiWindowCreatorTab(ResourceLocation overlay, IGuiWrapper gui, TileEntityMekanism tile, int x, int y, int height, int innerSize, boolean left,
           @Nonnull Supplier<ELEMENT> elementSupplier) {
@@ -20,7 +20,7 @@ public abstract class GuiWindowCreatorTab<ELEMENT extends GuiWindowCreatorTab<EL
     }
 
     @Override
-    public void func_230982_a_(double mouseX, double mouseY) {
+    public void onClick(double mouseX, double mouseY) {
         GuiWindow window = createWindow();
         window.setTabListeners(getCloseListener(), getReAttachListener());
         disableTab();
@@ -46,11 +46,11 @@ public abstract class GuiWindowCreatorTab<ELEMENT extends GuiWindowCreatorTab<EL
     }
 
     protected void disableTab() {
-        field_230693_o_ = false;
+        active = false;
     }
 
     protected Runnable getCloseListener() {
-        return () -> elementSupplier.get().field_230693_o_ = true;
+        return () -> elementSupplier.get().active = true;
     }
 
     protected Runnable getReAttachListener() {
