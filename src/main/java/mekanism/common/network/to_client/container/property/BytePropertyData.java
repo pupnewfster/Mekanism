@@ -18,8 +18,8 @@ public class BytePropertyData extends PropertyData {
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         buffer.writeByte(value);
     }
 }

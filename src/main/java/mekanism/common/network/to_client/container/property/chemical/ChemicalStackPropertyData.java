@@ -24,8 +24,8 @@ public abstract class ChemicalStackPropertyData<STACK extends ChemicalStack<?>> 
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         ChemicalUtils.writeChemicalStack(buffer, value);
     }
 }

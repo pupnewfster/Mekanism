@@ -639,7 +639,7 @@ public abstract class MekanismContainer extends Container implements ISecurityCo
                 }
             }
             if (!dirtyData.isEmpty()) {
-                sendChange(new PacketUpdateContainer((short) containerId, dirtyData));
+                sendChange(PacketUpdateContainer.create((short) containerId, dirtyData));
             }
         }
     }
@@ -663,7 +663,7 @@ public abstract class MekanismContainer extends Container implements ISecurityCo
                 dirtyData.add(trackedData.get(i).getPropertyData(i, DirtyType.DIRTY));
             }
             if (!dirtyData.isEmpty()) {
-                Mekanism.packetHandler.sendTo(new PacketUpdateContainer((short) containerId, dirtyData), (ServerPlayerEntity) listener);
+                Mekanism.packetHandler.sendTo(PacketUpdateContainer.create((short) containerId, dirtyData), (ServerPlayerEntity) listener);
             }
         }
     }

@@ -25,8 +25,8 @@ public class FrequencyPropertyData<FREQUENCY extends Frequency> extends Property
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         if (value == null) {
             buffer.writeBoolean(false);
         } else {

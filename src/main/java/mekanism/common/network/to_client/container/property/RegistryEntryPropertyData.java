@@ -23,8 +23,8 @@ public class RegistryEntryPropertyData<V extends IForgeRegistryEntry<V>> extends
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         buffer.writeRegistryId(value);
     }
 }

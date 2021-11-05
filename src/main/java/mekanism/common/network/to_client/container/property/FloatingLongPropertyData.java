@@ -21,8 +21,8 @@ public class FloatingLongPropertyData extends PropertyData {
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         value.writeToBuffer(buffer);
     }
 }

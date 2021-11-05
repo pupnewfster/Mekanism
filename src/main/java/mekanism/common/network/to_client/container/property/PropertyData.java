@@ -13,18 +13,20 @@ public abstract class PropertyData {
         this.property = property;
     }
 
-    public PropertyType getType() {
+    public final PropertyType getType() {
         return type;
     }
 
-    public short getProperty() {
+    public final short getProperty() {
         return property;
     }
 
     public abstract void handleWindowProperty(MekanismContainer container);
 
-    public void writeToPacket(PacketBuffer buffer) {
-        buffer.writeEnum(type);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        if (!skipType) {
+            buffer.writeEnum(type);
+        }
         buffer.writeShort(property);
     }
 

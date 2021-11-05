@@ -18,8 +18,8 @@ public class FloatPropertyData extends PropertyData {
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
-        super.writeToPacket(buffer);
+    public void writeToPacket(PacketBuffer buffer, boolean skipType) {
+        super.writeToPacket(buffer, skipType);
         buffer.writeFloat(value);
     }
 }
