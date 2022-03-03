@@ -41,6 +41,7 @@ public class GeneratorsConfig extends BaseMekanismConfig {
     public final CachedFloatingLongValue windGenerationMax;
     public final CachedIntValue windGenerationMinY;
     public final CachedIntValue windGenerationMaxY;
+    public final CachedIntValue windGenerationBelowPenalty;
     public final CachedResourceLocationListValue windGenerationDimBlacklist;
 
     public final CachedFloatingLongValue energyPerFissionFuel;
@@ -97,7 +98,7 @@ public class GeneratorsConfig extends BaseMekanismConfig {
 
         builder.comment("Wind Generator Settings").push(WIND_CATEGORY);
         windGenerationMin = CachedFloatingLongValue.define(this, builder, "Minimum base generation value of the Wind Generator.",
-              "windGenerationMin", FloatingLong.createConst(60));
+              "generationMin", FloatingLong.createConst(60));
         //TODO: Should this be capped by the min generator?
         windGenerationMax = CachedFloatingLongValue.define(this, builder, "Maximum base generation value of the Wind Generator.",
               "generationMax", FloatingLong.createConst(480));
@@ -107,6 +108,8 @@ public class GeneratorsConfig extends BaseMekanismConfig {
         // as it is just used for range clamping
         windGenerationMaxY = CachedIntValue.wrap(this, builder.comment("The maximum Y value that affects the Wind Generators Power generation. This value gets clamped at the world's logical height.")
               .define("maxY", DimensionType.MAX_Y, value -> value instanceof Integer && (Integer) value > windGenerationMinY.get()));
+        windGenerationBelowPenalty = CachedIntValue.wrap(this, builder.comment("The amount the generation is divided by for the Wind Generator being below the average height of the area it is placed in.")
+              .defineInRange("belowAveragePenalty", 8, 0, Integer.MAX_VALUE));
         //Note: We cannot verify the dimension exists as dimensions are dynamic so may not actually exist when we are validating
         windGenerationDimBlacklist = CachedResourceLocationListValue.define(this, builder.comment("The list of dimension ids that the Wind Generator will not generate power in."),
               "windGenerationDimBlacklist", rl -> true);

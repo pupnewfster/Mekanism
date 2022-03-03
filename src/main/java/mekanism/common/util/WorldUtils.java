@@ -75,13 +75,24 @@ public class WorldUtils {
      */
     @Contract("null, _, _ -> false")
     public static boolean isChunkLoaded(@Nullable LevelReader world, int chunkX, int chunkZ) {
+        return getChunkIfLoaded(world, chunkX, chunkZ).isPresent();
+    }
+
+    /**
+     * Gets the chunk at the given position if it is loaded.
+     *
+     * @param world  world
+     * @param chunkX Chunk X coordinate
+     * @param chunkZ Chunk Z coordinate
+     */
+    public static Optional<ChunkAccess> getChunkIfLoaded(@Nullable LevelReader world, int chunkX, int chunkZ) {
         if (world == null) {
-            return false;
+            return Optional.empty();
         } else if (world instanceof LevelAccessor accessor && accessor.getChunkSource() instanceof ServerChunkCache serverChunkCache) {
             CompletableFuture<Either<ChunkAccess, ChunkLoadingFailure>> future = serverChunkCache.getChunkFuture(chunkX, chunkZ, ChunkStatus.FULL, false);
-            return future.isDone() && future.getNow(ChunkHolder.UNLOADED_CHUNK).left().isPresent();
+            return future.isDone() ? future.getNow(ChunkHolder.UNLOADED_CHUNK).left() : Optional.empty();
         }
-        return world.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false) != null;
+        return Optional.ofNullable(world.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false));
     }
 
     /**
