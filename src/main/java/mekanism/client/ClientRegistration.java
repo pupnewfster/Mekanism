@@ -83,8 +83,7 @@ import mekanism.client.model.ModelArmoredFreeRunners;
 import mekanism.client.model.ModelArmoredJetpack;
 import mekanism.client.model.ModelAtomicDisassembler;
 import mekanism.client.model.ModelChemicalDissolutionChamber;
-import mekanism.client.model.ModelEnergyCube;
-import mekanism.client.model.ModelEnergyCube.ModelEnergyCore;
+import mekanism.client.model.ModelEnergyCore;
 import mekanism.client.model.ModelFlamethrower;
 import mekanism.client.model.ModelFluidTank;
 import mekanism.client.model.ModelFreeRunners;
@@ -100,6 +99,7 @@ import mekanism.client.model.baked.DigitalMinerBakedModel;
 import mekanism.client.model.baked.DriveArrayBakedModel;
 import mekanism.client.model.baked.ExtensionBakedModel.LightedBakedModel;
 import mekanism.client.model.baked.QIORedstoneAdapterBakedModel;
+import mekanism.client.model.energycube.EnergyCubeModel;
 import mekanism.client.model.robit.RobitModel;
 import mekanism.client.particle.JetpackFlameParticle;
 import mekanism.client.particle.JetpackSmokeParticle;
@@ -158,11 +158,13 @@ import mekanism.client.render.transmitter.RenderUniversalCable;
 import mekanism.client.sound.SoundHandler;
 import mekanism.common.Mekanism;
 import mekanism.common.base.HolidayManager;
+import mekanism.common.block.attribute.Attribute;
 import mekanism.common.content.gear.shared.ModuleColorModulationUnit;
 import mekanism.common.integration.MekanismHooks;
 import mekanism.common.item.ItemConfigurationCard;
 import mekanism.common.item.ItemCraftingFormula;
 import mekanism.common.item.block.ItemBlockCardboardBox;
+import mekanism.common.item.block.ItemBlockEnergyCube;
 import mekanism.common.lib.Color;
 import mekanism.common.lib.FieldReflectionHelper;
 import mekanism.common.lib.radiation.RadiationManager;
@@ -180,6 +182,7 @@ import mekanism.common.registries.MekanismTileEntityTypes;
 import mekanism.common.resource.IResource;
 import mekanism.common.resource.PrimaryResource;
 import mekanism.common.resource.ResourceType;
+import mekanism.common.tier.EnergyCubeTier;
 import mekanism.common.tile.qio.TileEntityQIOComponent;
 import mekanism.common.tile.transmitter.TileEntityLogisticalTransporter;
 import mekanism.common.util.RegistryUtils;
@@ -354,7 +357,6 @@ public class ClientRegistration {
         event.registerLayerDefinition(ModelAtomicDisassembler.DISASSEMBLER_LAYER, ModelAtomicDisassembler::createLayerDefinition);
         event.registerLayerDefinition(ModelChemicalDissolutionChamber.DISSOLUTION_LAYER, ModelChemicalDissolutionChamber::createLayerDefinition);
         event.registerLayerDefinition(ModelEnergyCore.CORE_LAYER, ModelEnergyCore::createLayerDefinition);
-        event.registerLayerDefinition(ModelEnergyCube.CUBE_LAYER, ModelEnergyCube::createLayerDefinition);
         event.registerLayerDefinition(ModelFlamethrower.FLAMETHROWER_LAYER, ModelFlamethrower::createLayerDefinition);
         event.registerLayerDefinition(ModelFluidTank.TANK_LAYER, ModelFluidTank::createLayerDefinition);
         event.registerLayerDefinition(ModelArmoredFreeRunners.ARMORED_FREE_RUNNER_LAYER, ModelArmoredFreeRunners::createLayerDefinition);
@@ -469,6 +471,7 @@ public class ClientRegistration {
     @SubscribeEvent
     public static void registerModelLoaders(RegisterGeometryLoaders event) {
         event.register("robit", RobitModel.Loader.INSTANCE);
+        event.register("energy_cube", EnergyCubeModel.Loader.INSTANCE);
         event.register("transmitter", TransmitterLoader.INSTANCE);
     }
 
@@ -534,6 +537,16 @@ public class ClientRegistration {
                 ClientRegistrationUtil.registerBlockColorHandler(event, (state, world, pos, index) -> index == 1 ? tint : -1, entry.getValue());
             }
         }
+        ClientRegistrationUtil.registerBlockColorHandler(event, (state, world, pos, index) -> {
+                  if (index == 1) {
+                      EnergyCubeTier tier = Attribute.getTier(state.getBlock(), EnergyCubeTier.class);
+                      if (tier != null) {
+                          return MekanismRenderer.getColorARGB(tier.getBaseTier().getColor(), 1);
+                      }
+                  }
+                  return -1;
+              }, MekanismBlocks.BASIC_ENERGY_CUBE, MekanismBlocks.ADVANCED_ENERGY_CUBE, MekanismBlocks.ELITE_ENERGY_CUBE, MekanismBlocks.ULTIMATE_ENERGY_CUBE,
+              MekanismBlocks.CREATIVE_ENERGY_CUBE);
     }
 
     @SubscribeEvent
@@ -561,6 +574,13 @@ public class ClientRegistration {
             }
             return -1;
         }, MekanismItems.MEKASUIT_HELMET, MekanismItems.MEKASUIT_BODYARMOR, MekanismItems.MEKASUIT_PANTS, MekanismItems.MEKASUIT_BOOTS);
+        ClientRegistrationUtil.registerItemColorHandler(event, (stack, index) -> {
+                  if (index == 1 && stack.getItem() instanceof ItemBlockEnergyCube cube) {
+                      return MekanismRenderer.getColorARGB(cube.getTier().getBaseTier().getColor(), 1);
+                  }
+                  return -1;
+              }, MekanismBlocks.BASIC_ENERGY_CUBE, MekanismBlocks.ADVANCED_ENERGY_CUBE, MekanismBlocks.ELITE_ENERGY_CUBE, MekanismBlocks.ULTIMATE_ENERGY_CUBE,
+              MekanismBlocks.CREATIVE_ENERGY_CUBE);
 
         for (Map.Entry<IResource, BlockRegistryObject<?, ?>> entry : MekanismBlocks.PROCESSED_RESOURCE_BLOCKS.entrySet()) {
             if (entry.getKey() instanceof PrimaryResource primaryResource) {
