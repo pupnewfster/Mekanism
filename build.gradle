@@ -465,6 +465,9 @@ dependencies {
     testRuntimeOnly cc
     compileOnly fg.deobf("curse.maven:female-gender-forge-481655:${wildfire_gender_mod_id}")
 
+    runtimeOnly fg.deobf("curse.maven:rubidium-574856:3973894")
+    implementation fg.deobf("curse.maven:oculus-581495:3973908")
+
     //Dependencies for data generators for mod compat reference
     datagenMainImplementation fg.deobf("appeng:appliedenergistics2:${ae2_version}")
     datagenMainCompileOnly fg.deobf("curse.maven:biomes-o-plenty-api-220318:${biomesoplenty_api_id}")
