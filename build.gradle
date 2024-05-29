@@ -18,7 +18,7 @@ plugins {
     id('eclipse')
     id('idea')
     id('maven-publish')
-    id('net.neoforged.gradle.userdev') version('7.0.134')//https://projects.neoforged.net/neoforged/neogradle
+    id('net.neoforged.gradle.userdev') version('7.0.136')//https://projects.neoforged.net/neoforged/neogradle
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -402,10 +402,6 @@ repositories { RepositoryHandler handler ->
     exclusiveRepo(handler, 'https://maven.parchmentmc.org/', 'org.parchmentmc.data')
 }
 
-tasks.named('test', Test) {
-    useJUnitPlatform()
-}
-
 dependencies {
     implementation("net.neoforged:neoforge:${forge_version}")
 
@@ -413,7 +409,9 @@ dependencies {
     localRuntime(project(':annotation-processor'))
     annotationProcessor(project(':annotation-processor'))
 
-    gameTestImplementation("net.neoforged:testframework:${forge_version}")
+    def testFrameWork = "net.neoforged:testframework:${forge_version}"
+    gameTestImplementation(testFrameWork)
+    testImplementation(testFrameWork)
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junit_version}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junit_version}")
     //We use https://github.com/quicktheories/QuickTheories to allow for implementing property based testing
