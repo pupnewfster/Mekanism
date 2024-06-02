@@ -3,7 +3,8 @@ import com.modrinth.minotaur.dependencies.ModDependency
 import com.modrinth.minotaur.dependencies.VersionDependency
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import mekanism.MergeJars
+import mekanism.AllJar
+import mekanism.MergeModuleResources
 import mekanism.OptimizePng
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.UploadArtifact
@@ -19,12 +20,12 @@ plugins {
     id('eclipse')
     id('idea')
     id('maven-publish')
-    id('net.neoforged.gradle.userdev') version('7.0.136')//https://projects.neoforged.net/neoforged/neogradle
+    id('net.neoforged.gradle.userdev') version('7.0.138')//https://projects.neoforged.net/neoforged/neogradle
 }
 
 tasks.named('wrapper', Wrapper).configure {
     //Define wrapper values here so as to not have to always do so when updating gradlew.properties
-    gradleVersion = '8.7'
+    gradleVersion = '8.8'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -33,7 +34,7 @@ defaultTasks('build')
 idea {
     module {
         //Exclude directories from being managed
-        for (String excludeDirName : ["runs", "out", "logs", "gradle"]) {
+        for (String excludeDirName : ['runs', "out", 'logs', 'gradle']) {
             excludeDirs.add(new File(projectDir, excludeDirName))
         }
         //Tell IDEA to always download sources/javadoc artifacts from maven.
@@ -43,8 +44,8 @@ idea {
 }
 
 ext {
-    versionProperties = ["version": mod_version, "mc_version": minecraft_version_range, "forge_version": forge_version_range, "loader_version": loader_version_range]
-    jsonPatterns = ["**/*.json", "**/*.mcmeta"]
+    versionProperties = ['version': mod_version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, 'loader_version': loader_version_range]
+    jsonPatterns = ['**/*.json', '**/*.mcmeta']
     secondaryModules = ['additions', 'defense', 'generators', 'tools']
     extraTypes = ['datagen']
 }
@@ -224,8 +225,9 @@ def setupTasks(SourceSet sourceSet) {
         //Depend on the compile task so that we can map the computer methods as needed
         dependsOn(compileTask)
         finalizedBy(replaceResourceTask)
+        def files = fileTree(dir: getOutputs().getFiles().getAsPath(), includes: jsonPatterns)
         doLast {
-            for (def file : fileTree(dir: getOutputs().getFiles().getAsPath(), includes: jsonPatterns)) {
+            for (def file : files) {
                 file.setText(JsonOutput.toJson(new JsonSlurper().parse(file)))
             }
         }
@@ -525,27 +527,30 @@ def defenseJar = secondaryJar(sourceSets.defense, 'MekanismDefense')
 def generatorsJar = secondaryJar(sourceSets.generators, 'MekanismGenerators')
 def toolsJar = secondaryJar(sourceSets.tools, 'MekanismTools')
 
-def allJar = tasks.register('allJar', Jar, {
-    dependsOn(classes, apiClasses, additionsClasses, defenseClasses, generatorsClasses, toolsClasses)
-    mustRunAfter(clean)
+def mergeModuleResources = tasks.register('mergeModuleResources', MergeModuleResources, {
+    resources = sourceSets.main.resources.getSourceDirectories()
+    annotationGenerated = sourceSets.main.output.getClassesDirs()
+    for (String name : secondaryModules) {
+        SourceSet secondarySourceSet = sourceSets.named(name).get()
+        resources = resources + secondarySourceSet.resources.getSourceDirectories()
+        annotationGenerated = annotationGenerated + secondarySourceSet.output.getClassesDirs()//.getAsFileTree().matching(MergeJars.serviceFilter)
+    }
+    //TODO: Test this
+    annotationGenerated = annotationGenerated.getAsFileTree().matching(serviceFilter)
+})
+
+def allJar = tasks.register('allJar', AllJar, {
+    dependsOn(mergeModuleResources)
     duplicatesStrategy(DuplicatesStrategy.FAIL)
     archiveClassifier.set('all')
     manifest.attributes(getManifestAttributes('MekanismAll'))
-    def combineSets = [sourceSets.main, sourceSets.additions, sourceSets.defense, sourceSets.generators, sourceSets.tools]
-    doFirst {
-        //Start by generating the merged data
-        MergeJars.merge(project, combineSets)
-    }
-    //Then copy all the files except for ones we are going to include from the merged
-    from(sourceSets.api.output)
-    List<String> baseExcludeData = MergeJars.getGeneralPathsToExclude(project, combineSets)
-    from(sourceSets.main.output, MergeJars.createExcludeClosure(baseExcludeData, 'crafttweaker_parameter_names.json'))
-    Closure<CopySpec> excludeFromAll = MergeJars.createExcludeClosure(baseExcludeData, 'logo.png', 'pack.mcmeta')
+    versions.putAll(versionProperties)
+    pathsToExclude.set(mergeModuleResources.flatMap(m -> m.pathsToExclude))
+    apiOutput = sourceSets.api.output
+    mainOutput = sourceSets.main.output
     for (String name : secondaryModules) {
-        from(sourceSets.named(name).map(s -> s.output), excludeFromAll)
+        secondaryModuleOutputs = secondaryModuleOutputs + sourceSets.named(name).get().output
     }
-    //And finally copy over the generated files
-    MergeJars.getGeneratedClosures(versionProperties).each { closure -> from(layout.buildDirectory.dir('generated'), closure) }
 })
 
 tasks.withType(JavaCompile).configureEach({
