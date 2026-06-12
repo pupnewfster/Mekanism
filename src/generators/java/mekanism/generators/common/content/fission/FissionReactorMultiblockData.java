@@ -15,6 +15,7 @@ import mekanism.api.chemical.attribute.ChemicalAttributeValidator;
 import mekanism.api.datamaps.IMekanismDataMapTypes;
 import mekanism.api.datamaps.chemical.attribute.CooledCoolant;
 import mekanism.api.heat.HeatAPI;
+import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.math.MathUtils;
 import mekanism.api.radiation.IRadiationManager;
 import mekanism.api.resource.IResourceContainer;
@@ -171,7 +172,11 @@ public class FissionReactorMultiblockData extends MultiblockData implements IVal
         Collections.addAll(chemicalTanks, fuelTank, heatedCoolantTank, wasteTank, coolantTank.getChemicalTank());
         heatCapacitor = VariableHeatCapacitor.create(MekanismGeneratorsConfig.generators.fissionCasingHeatCapacity.get(),
               () -> INVERSE_CONDUCTION_COEFFICIENT, () -> INVERSE_INSULATION_COEFFICIENT, () -> biomeAmbientTemp, this);
-        heatCapacitors.add(heatCapacitor);
+    }
+
+    @Override
+    protected IHeatCapacitor heatCapacitor() {
+        return heatCapacitor;
     }
 
     @Override
@@ -209,7 +214,7 @@ public class FissionReactorMultiblockData extends MultiblockData implements IVal
         // external heat dissipation
         lastEnvironmentLoss = simulateEnvironment();
         // update temperature
-        updateHeatCapacitors(null);
+        heatCapacitor.update();
         handleDamage(world);
         radiateEntities(world);
 
@@ -665,9 +670,10 @@ public class FissionReactorMultiblockData extends MultiblockData implements IVal
         return coolantTank.getCurrentContainer().amountAsLong() / (double) cooledCoolantCapacity;
     }
 
+    @Override
     @ComputerMethod
-    double getHeatCapacity() {
-        return heatCapacitor.getHeatCapacity();
+    public double getHeatCapacity() {
+        return super.getHeatCapacity();
     }
     //End computer related methods
 }

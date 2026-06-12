@@ -16,6 +16,7 @@ import mekanism.api.chemical.IChemicalTank;
 import mekanism.api.datamaps.IMekanismDataMapTypes;
 import mekanism.api.datamaps.chemical.attribute.HeatedCoolant;
 import mekanism.api.heat.HeatAPI;
+import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.math.MathUtils;
 import mekanism.common.block.attribute.AttributeStateBoilerValveMode.BoilerValveMode;
 import mekanism.common.capabilities.chemical.VariableCapacityChemicalTank;
@@ -133,7 +134,11 @@ public class BoilerMultiblockData extends MultiblockData implements IValveHandle
         Collections.addAll(chemicalTanks, steamTank, superheatedCoolantTank, cooledCoolantTank);
         heatCapacitor = VariableHeatCapacitor.create(CASING_HEAT_CAPACITY, () -> CASING_INVERSE_CONDUCTION_COEFFICIENT, () -> CASING_INVERSE_INSULATION_COEFFICIENT,
               () -> biomeAmbientTemp, this);
-        heatCapacitors.add(heatCapacitor);
+    }
+
+    @Override
+    protected IHeatCapacitor heatCapacitor() {
+        return heatCapacitor;
     }
 
     @Override
@@ -159,11 +164,11 @@ public class BoilerMultiblockData extends MultiblockData implements IValveHandle
     @Override
     public boolean tick(ServerLevel world) {
         boolean needsPacket = super.tick(world);
-        hotMap.put(inventoryID, getTotalTemperature() >= HeatUtils.BASE_BOIL_TEMP - 0.01);
+        hotMap.put(inventoryID, getTemperature() >= HeatUtils.BASE_BOIL_TEMP - 0.01);
         // external heat dissipation
         lastEnvironmentLoss = simulateEnvironment();
         // update temperature
-        updateHeatCapacitors(null);
+        heatCapacitor.update();
         // handle coolant heat transfer
         if (!superheatedCoolantTank.isEmpty()) {
             HeatedCoolant coolantType = getHeatedCoolant();
@@ -182,7 +187,7 @@ public class BoilerMultiblockData extends MultiblockData implements IValveHandle
             }
         }
         // handle water heat transfer
-        if (getTotalTemperature() >= HeatUtils.BASE_BOIL_TEMP && !waterTank.isEmpty()) {
+        if (getTemperature() >= HeatUtils.BASE_BOIL_TEMP && !waterTank.isEmpty()) {
             double heatAvailable = getHeatAvailable();
             lastMaxBoil = Mth.floor(HeatUtils.getSteamEnergyEfficiency() * heatAvailable / HeatUtils.getWaterThermalEnthalpy());
             FluidResource water = waterTank.resource();

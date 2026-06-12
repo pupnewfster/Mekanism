@@ -3,10 +3,11 @@ package mekanism.common.tile.multiblock;
 import mekanism.api.IContentsListener;
 import mekanism.api.fluid.IFluidTank;
 import mekanism.api.heat.IHeatCapacitor;
-import mekanism.common.component.containers.type.ContainerType;
-import mekanism.common.component.containers.type.IContainerType;
 import mekanism.common.capabilities.heat.CachedAmbientTemperature;
 import mekanism.common.capabilities.holder.container.IContainerHolder;
+import mekanism.common.capabilities.holder.single.ISingleContainerHolder;
+import mekanism.common.component.containers.type.ContainerType;
+import mekanism.common.component.containers.type.IContainerType;
 import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,8 +24,8 @@ public class TileEntityThermalEvaporationValve extends TileEntityThermalEvaporat
     }
 
     @Override
-    protected IContainerHolder<IHeatCapacitor> getInitialHeatCapacitors(IContentsListener listener, CachedAmbientTemperature ambientTemperature) {
-        return _ -> getMultiblock().getHeatCapacitors();
+    protected ISingleContainerHolder<IHeatCapacitor> getInitialHeatCapacitor(IContentsListener listener, CachedAmbientTemperature ambientTemperature) {
+        return _ -> getMultiblock().getHeatCapacitor();
     }
 
     @Override

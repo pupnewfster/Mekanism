@@ -3,59 +3,32 @@ package mekanism.common.capabilities.proxy;
 import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.heat.IHeatHandler;
 import mekanism.api.heat.ISidedHeatHandler;
-import mekanism.common.capabilities.holder.container.IContainerHolder;
+import mekanism.common.capabilities.holder.single.ISingleContainerHolder;
 import net.minecraft.core.Direction;
 import org.jspecify.annotations.Nullable;
 
-public class ProxyHeatHandler extends ProxyHandler<IContainerHolder<IHeatCapacitor>> implements IHeatHandler {
+public class ProxyHeatHandler extends ProxyHandler<ISingleContainerHolder<IHeatCapacitor>> implements IHeatHandler {
 
     private final ISidedHeatHandler heatHandler;
 
-    public ProxyHeatHandler(ISidedHeatHandler heatHandler, @Nullable Direction side, IContainerHolder<IHeatCapacitor> holder) {
+    public ProxyHeatHandler(ISidedHeatHandler heatHandler, @Nullable Direction side, ISingleContainerHolder<IHeatCapacitor> holder) {
         super(side, holder);
         this.heatHandler = heatHandler;
     }
 
     @Override
-    public int getHeatCapacitorCount() {
-        return heatHandler.getHeatCapacitorCount(side);
+    public double getTemperature() {
+        return heatHandler.getTemperature(side);
     }
 
     @Override
-    public double getTemperature(int capacitor) {
-        return heatHandler.getTemperature(capacitor, side);
+    public double getInverseConduction() {
+        return heatHandler.getInverseConduction(side);
     }
 
     @Override
-    public double getInverseConduction(int capacitor) {
-        return heatHandler.getInverseConduction(capacitor, side);
-    }
-
-    @Override
-    public double getHeatCapacity(int capacitor) {
-        return heatHandler.getHeatCapacity(capacitor, side);
-    }
-
-    @Override
-    public void handleHeat(int capacitor, double transfer) {
-        if (!readOnly) {
-            heatHandler.handleHeat(capacitor, transfer, side);
-        }
-    }
-
-    @Override
-    public double getTotalTemperature() {
-        return heatHandler.getTotalTemperature(side);
-    }
-
-    @Override
-    public double getTotalInverseConduction() {
-        return heatHandler.getTotalInverseConductionCoefficient(side);
-    }
-
-    @Override
-    public double getTotalHeatCapacity() {
-        return heatHandler.getTotalHeatCapacity(side);
+    public double getHeatCapacity() {
+        return heatHandler.getHeatCapacity(side);
     }
 
     @Override

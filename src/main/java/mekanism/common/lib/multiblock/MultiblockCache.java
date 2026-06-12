@@ -36,9 +36,10 @@ public class MultiblockCache<T extends MultiblockData> implements IMultiblockCon
     private final List<IInventorySlot> inventorySlots = new ArrayList<>();
     private final List<IFluidTank> fluidTanks = new ArrayList<>();
     private final List<IChemicalTank> chemicalTanks = new ArrayList<>();
-    private final List<IHeatCapacitor> heatCapacitors = new ArrayList<>();
     @Nullable
     private IEnergyContainer energyContainer;
+    @Nullable
+    private IHeatCapacitor heatCapacitor;
 
     public void apply(T data) {
         for (CacheSubstance<ValueIOSerializable> type : CACHE_SUBSTANCES) {
@@ -80,7 +81,7 @@ public class MultiblockCache<T extends MultiblockData> implements IMultiblockCon
             // Energy
             StorageUtils.mergeEnergyContainers(getEnergyContainer(), mergeCache.getEnergyContainer(), transaction);
             // Heat
-            StorageUtils.mergeHeatCapacitors(getHeatCapacitors(), mergeCache.getHeatCapacitors());
+            StorageUtils.mergeHeatCapacitors(getHeatCapacitor(), mergeCache.getHeatCapacitor());
             transaction.commit();
         }
     }
@@ -106,9 +107,10 @@ public class MultiblockCache<T extends MultiblockData> implements IMultiblockCon
         return energyContainer;
     }
 
+    @Nullable
     @Override
-    public List<IHeatCapacitor> getHeatCapacitors(@Nullable Direction side) {
-        return heatCapacitors;
+    public IHeatCapacitor getHeatCapacitor() {
+        return heatCapacitor;
     }
 
     public static class RejectContents {
@@ -167,15 +169,16 @@ public class MultiblockCache<T extends MultiblockData> implements IMultiblockCon
         }
     };
 
-    public static final CacheSubstance<IHeatCapacitor> HEAT = new CacheListSubstance<>(ContainerType.HEAT) {
+    public static final CacheSubstance<IHeatCapacitor> HEAT = new CacheSingleSubstance<>(ContainerType.HEAT) {
         @Override
         protected void defaultPrefab(MultiblockCache<?> cache) {
-            cache.heatCapacitors.add(BasicHeatCapacitor.create(HeatAPI.DEFAULT_HEAT_CAPACITY, null, null));
+            cache.heatCapacitor = BasicHeatCapacitor.create(HeatAPI.DEFAULT_HEAT_CAPACITY, null, null);
         }
 
+        @Nullable
         @Override
-        protected List<IHeatCapacitor> containerList(IMultiblockContents handler) {
-            return handler.getHeatCapacitors();
+        protected IHeatCapacitor container(IMultiblockContents handler) {
+            return handler.getHeatCapacitor();
         }
     };
 

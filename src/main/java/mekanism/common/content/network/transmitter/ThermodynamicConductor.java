@@ -1,19 +1,17 @@
 package mekanism.common.content.network.transmitter;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import mekanism.api.IContentsListener;
 import mekanism.api.SerializationConstants;
 import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.heat.IHeatHandler;
-import mekanism.common.component.containers.type.ContainerType;
 import mekanism.common.block.attribute.Attribute;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.capabilities.heat.CachedAmbientTemperature;
 import mekanism.common.capabilities.heat.ITileHeatHandler;
 import mekanism.common.capabilities.heat.VariableHeatCapacitor;
+import mekanism.common.component.containers.type.ContainerType;
 import mekanism.common.content.network.HeatNetwork;
 import mekanism.common.lib.Color;
 import mekanism.common.lib.transmitter.TransmissionType;
@@ -38,14 +36,12 @@ public class ThermodynamicConductor extends Transmitter<IHeatHandler, HeatNetwor
     public final ConductorTier tier;
     //Default to negative one, so we know we need to calculate it when needed
     private double clientTemperature = -1;
-    private final List<IHeatCapacitor> capacitors;
     public final VariableHeatCapacitor buffer;
 
     public ThermodynamicConductor(Holder<Block> blockProvider, TileEntityTransmitter tile) {
         this.tier = Attribute.getTierNN(blockProvider, ConductorTier.class);
         super(tile, TransmissionType.HEAT);
         buffer = VariableHeatCapacitor.create(tier.getHeatCapacity(), tier::getInverseConduction, tier::getInverseConductionInsulation, ambientTemperature, this);
-        capacitors = Collections.singletonList(buffer);
     }
 
     @Override
@@ -98,13 +94,13 @@ public class ThermodynamicConductor extends Transmitter<IHeatHandler, HeatNetwor
     @Override
     public void write(ValueOutput output) {
         super.write(output);
-        ContainerType.HEAT.saveTo(output, getHeatCapacitors(null));
+        ContainerType.HEAT.saveTo(output, getHeatCapacitor());
     }
 
     @Override
     public void read(ValueInput input) {
         super.read(input);
-        ContainerType.HEAT.readFrom(input, getHeatCapacitors(null));
+        ContainerType.HEAT.readFrom(input, getHeatCapacitor());
     }
 
     @Override
@@ -125,8 +121,12 @@ public class ThermodynamicConductor extends Transmitter<IHeatHandler, HeatNetwor
     }
 
     @Override
-    public List<IHeatCapacitor> getHeatCapacitors(@Nullable Direction side) {
-        return capacitors;
+    public IHeatCapacitor getHeatCapacitor() {
+        return buffer;
+    }
+
+    public void updateHeatCapacitor() {
+        buffer.update();
     }
 
     @Override

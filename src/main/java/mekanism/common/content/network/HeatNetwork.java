@@ -56,8 +56,8 @@ public class HeatNetwork extends DynamicNetwork<IHeatHandler, HeatNetwork, Therm
         // we do this after instead of when iterating initially so that if heat is transferred from one
         // conductor to one we already updated then we want it to have the proper total temperature
         for (ThermodynamicConductor transmitter : getTransmitters()) {
-            transmitter.updateHeatCapacitors(null);
-            newSumTemp += transmitter.getTotalTemperature();
+            transmitter.updateHeatCapacitor();
+            newSumTemp += transmitter.getTemperature();
         }
         heatLost = newHeatLost;
         heatTransferred = newHeatTransferred;

@@ -23,7 +23,6 @@ import mekanism.api.chemical.IChemicalTank;
 import mekanism.api.energy.IEnergyContainer;
 import mekanism.api.fluid.IFluidTank;
 import mekanism.api.heat.HeatAPI;
-import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.inventory.IInventorySlot;
 import mekanism.api.resource.IResourceContainer;
 import mekanism.api.resource.LargeResourceStack;
@@ -116,7 +115,6 @@ public class InventoryFrequency extends Frequency implements ITileHeatHandler, I
     private List<IInventorySlot> inventorySlots;
     private List<IChemicalTank> chemicalTanks;
     private List<IFluidTank> fluidTanks;
-    private List<IHeatCapacitor> heatCapacitors;
 
     /// @param uuid Should only be null if we have incomplete data that we are loading
     public InventoryFrequency(String n, @Nullable UUID uuid, SecurityMode securityMode) {
@@ -134,8 +132,7 @@ public class InventoryFrequency extends Frequency implements ITileHeatHandler, I
         chemicalTanks = Collections.singletonList(storedChemical = BasicChemicalTank.create(MekanismConfig.general.entangloporterChemicalBuffer.get(), this));
         inventorySlots = Collections.singletonList(storedItem = EntangloporterInventorySlot.create(this));
         storedEnergy = BasicEnergyContainer.create(MekanismConfig.general.entangloporterEnergyBuffer.getAsLong(), this);
-        heatCapacitors = Collections.singletonList(storedHeat = BasicHeatCapacitor.create(HeatAPI.DEFAULT_HEAT_CAPACITY, HeatAPI.DEFAULT_INVERSE_CONDUCTION,
-              1_000, null, this));
+        storedHeat = BasicHeatCapacitor.create(HeatAPI.DEFAULT_HEAT_CAPACITY, HeatAPI.DEFAULT_INVERSE_CONDUCTION, 1_000, null, this);
     }
 
     public List<IInventorySlot> getInventorySlots() {
@@ -154,13 +151,9 @@ public class InventoryFrequency extends Frequency implements ITileHeatHandler, I
         return storedEnergy;
     }
 
-    public List<IHeatCapacitor> getHeatCapacitors() {
-        return heatCapacitors;
-    }
-
     @Override
-    public List<IHeatCapacitor> getHeatCapacitors(@Nullable Direction side) {
-        return heatCapacitors;
+    public BasicHeatCapacitor getHeatCapacitor() {
+        return storedHeat;
     }
 
     @Override

@@ -10,6 +10,7 @@ import mekanism.api.IEvaporationSolar;
 import mekanism.api.SerializationConstants;
 import mekanism.api.functions.ConstantPredicates;
 import mekanism.api.heat.HeatAPI;
+import mekanism.api.heat.IHeatCapacitor;
 import mekanism.api.recipes.FluidToFluidRecipe;
 import mekanism.api.recipes.cache.CachedRecipe;
 import mekanism.api.recipes.cache.CachedRecipe.OperationTracker.RecipeError;
@@ -132,7 +133,12 @@ public class EvaporationMultiblockData extends MultiblockData implements IValveH
         inventorySlots.add(outputOutputSlot = OutputInventorySlot.at(this, 152, 51));
         inputInputSlot.setSlotType(ContainerSlotType.INPUT);
         inputOutputSlot.setSlotType(ContainerSlotType.INPUT);
-        heatCapacitors.add(heatCapacitor = VariableHeatCapacitor.create(MekanismConfig.general.evaporationHeatCapacity.get() * 3, () -> biomeAmbientTemp, this));
+        heatCapacitor = VariableHeatCapacitor.create(MekanismConfig.general.evaporationHeatCapacity.get() * 3, () -> biomeAmbientTemp, this);
+    }
+
+    @Override
+    protected IHeatCapacitor heatCapacitor() {
+        return heatCapacitor;
     }
 
     @Override
@@ -158,7 +164,7 @@ public class EvaporationMultiblockData extends MultiblockData implements IValveH
         // external heat dissipation
         lastEnvironmentLoss = simulateEnvironment();
         // update temperature
-        updateHeatCapacitors(null);
+        heatCapacitor.update();
         //After we update the heat capacitors, update our temperature multiplier
         // Note: We use the ambient temperature without taking our biome into account as we want to have a consistent multiplier
         tempMultiplier = (Math.min(MAX_MULTIPLIER_TEMP, getTemperature()) - HeatAPI.AMBIENT_TEMP) * MekanismConfig.general.evaporationTempMultiplier.get() *
@@ -236,9 +242,10 @@ public class EvaporationMultiblockData extends MultiblockData implements IValveH
         return 0;
     }
 
+    @Override
     @ComputerMethod
     public double getTemperature() {
-        return heatCapacitor.getTemperature();
+        return super.getTemperature();
     }
 
     @Override
