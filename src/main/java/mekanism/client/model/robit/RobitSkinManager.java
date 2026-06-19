@@ -68,7 +68,7 @@ public class RobitSkinManager {
 
     @SubscribeEvent
     public static void registerFakeStandalone(ModelEvent.RegisterStandalone event) {
-        event.register(new StandaloneModelKey<>(()->"robit_model_bridge"), new FakeStandaloneModel());
+        event.register(new StandaloneModelKey<>(() -> "robit_model_bridge"), new FakeStandaloneModel());
     }
 
     private final Map<Identifier, ResolvedModel> resolvedModelMap;
@@ -174,9 +174,10 @@ public class RobitSkinManager {
         }
     }
 
-    /// Gathers a list of models in models/robit/ by doing what the model manager does, then filtering.
-    /// Stored in a CompletableFuture so we can use it in the standalone model to force them to resolve
+    /// Gathers a list of models in models/robit/ by doing what the model manager does, then filtering. Stored in a CompletableFuture so we can use it in the standalone
+    /// model to force them to resolve
     private static class ModelGatherer implements PreparableReloadListener {
+
         @Nullable
         private static CompletableFuture<Set<Identifier>> robitModelIds = null;
 
@@ -184,19 +185,19 @@ public class RobitSkinManager {
         public CompletableFuture<Void> reload(SharedState currentReload, Executor taskExecutor, PreparationBarrier preparationBarrier, Executor reloadExecutor) {
             ResourceManager manager = currentReload.resourceManager();
             return CompletableFuture.supplyAsync(() -> ModelManager.MODEL_LISTER.listMatchingResources(manager), taskExecutor)
-            .thenAccept(
-                resources -> {
-                    Set<Identifier> robitModels = new HashSet<>();
-                    for (Map.Entry<Identifier, Resource> resource : resources.entrySet()) {
-                        Identifier modelId = ModelManager.MODEL_LISTER.fileToId(resource.getKey());
-                        if (modelId.getPath().startsWith("robit/")) {
-                            robitModels.add(modelId);
-                        }
-                    }
-                    Objects.requireNonNull(robitModelIds, "prepareSharedState not called??").complete(robitModels);
-                })
+                  .thenAccept(
+                        resources -> {
+                            Set<Identifier> robitModels = new HashSet<>();
+                            for (Map.Entry<Identifier, Resource> resource : resources.entrySet()) {
+                                Identifier modelId = ModelManager.MODEL_LISTER.fileToId(resource.getKey());
+                                if (modelId.getPath().startsWith("robit/")) {
+                                    robitModels.add(modelId);
+                                }
+                            }
+                            Objects.requireNonNull(robitModelIds, "prepareSharedState not called??").complete(robitModels);
+                        })
                   .thenCompose(preparationBarrier::wait)
-                  .thenAccept(_->robitModelIds = null);//prevent use after the preparation barrier
+                  .thenAccept(_ -> robitModelIds = null);//prevent use after the preparation barrier
         }
 
         @Override
