@@ -5,7 +5,6 @@ import mekanism.api.gear.IClientModuleHelper;
 import mekanism.api.gear.IHUDElement;
 import mekanism.api.gear.IHUDElement.HUDColor;
 import mekanism.api.gear.ModuleData;
-import mekanism.client.model.MekanismModelCache;
 import mekanism.client.render.armor.MekaSuitArmor;
 import mekanism.common.content.gear.HUDElement;
 import mekanism.common.util.text.BooleanStateDisplay.OnOff;
@@ -35,7 +34,8 @@ public class ClientModuleHelper implements IClientModuleHelper {
 
     @Override
     public synchronized void addMekaSuitModuleModels(Identifier location) {
-        MekanismModelCache.INSTANCE.registerMekaSuitModuleModel(location);
+        //TODO - 26.2: Implement this again
+        //MekanismModelCache.INSTANCE.registerMekaSuitModuleModel(location);
     }
 
     @Override

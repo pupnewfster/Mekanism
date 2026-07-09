@@ -15,9 +15,9 @@ public class MekanismModelCache extends BaseModelCache {
     public static final MekanismModelCache INSTANCE = new MekanismModelCache();
     private final Set<Runnable> callbacks = new HashSet<>();
 
-    public final OBJModelData MEKASUIT = registerOBJ("models/entity/mekasuit.obj");
-    public final OBJModelData MEKATOOL_LEFT_HAND = registerOBJ("models/entity/mekatool_left.obj");
-    public final OBJModelData MEKATOOL_RIGHT_HAND = registerOBJ("models/entity/mekatool_right.obj");
+    public final OBJModelData MEKASUIT = registerOBJ("entity/mekasuit");
+    public final OBJModelData MEKATOOL_LEFT_HAND = registerOBJ("entity/mekatool_left");
+    public final OBJModelData MEKATOOL_RIGHT_HAND = registerOBJ("entity/mekatool_right");
     private final Set<ModuleOBJModelData> mekaSuitModules = new HashSet<>();
     public final Set<ModuleOBJModelData> MEKASUIT_MODULES = Collections.unmodifiableSet(mekaSuitModules);
 

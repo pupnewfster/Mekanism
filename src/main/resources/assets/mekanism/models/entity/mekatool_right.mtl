@@ -3,8 +3,10 @@ newmtl 3
 map_Kd #mekasuit_armor_body
 newmtl 4
 map_Kd #leds
+newmtl 4led
+map_Kd #leds
+Ka 1 1 1
 newmtl 5
 map_Kd #mekasuit_armor_exoskeleton
 newmtl 6
 map_Kd #mekatool
-newmtl none
