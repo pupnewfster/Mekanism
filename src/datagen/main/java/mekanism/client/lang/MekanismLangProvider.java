@@ -1808,7 +1808,7 @@ public class MekanismLangProvider extends BaseLanguageProvider {
         String name = TextUtils.formatAndCapitalize(type.getResource().getRegistrySuffix());
         OreBlockType oreBlockType = MekanismBlocks.ORES.get(type);
         add(oreBlockType.stone(), name + " Ore");
-        add(oreBlockType.stone().value().getDescriptionTranslationKey(), description);
+        add(oreBlockType.stone().value().getDescription(), description);
         add(oreBlockType.deepslate(), "Deepslate " + name + " Ore");
         add(MekanismTags.BlockItems.ORES.get(type), name + " Ores");
     }

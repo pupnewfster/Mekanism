@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import mekanism.api.security.SecurityMode;
+import mekanism.api.text.TextComponentUtil;
 import mekanism.common.block.attribute.Attribute;
 import mekanism.common.block.attribute.AttributeUpgradeSupport;
 import mekanism.common.block.attribute.Attributes.AttributeRedstone;
@@ -51,7 +52,8 @@ public class BlockDeferredRegister extends DoubleDeferredRegister<Block, Item> {
 
     public <BLOCK extends Block, ITEM extends BlockItem> BlockRegistryObject<BLOCK, ITEM> register(String name, Supplier<Properties> baseBlockProperties,
           Function<BlockBehaviour.Properties, ? extends BLOCK> blockCreator, BiFunction<BLOCK, Item.Properties, ITEM> itemCreator) {
-        return registerAdvanced(name, key -> blockCreator.apply(baseBlockProperties.get().setId(createPrimaryId(key))), (key, block) -> {
+        return registerAdvanced(name, key -> blockCreator.apply(baseBlockProperties.get().setId(createPrimaryId(key))), (key, blockHolder) -> {
+            BLOCK block = blockHolder.get();
             Item.Properties properties = new Item.Properties();
             if (Attribute.has(block, AttributeSecurity.class)) {
                 properties.component(MekanismDataComponents.SECURITY, SecurityMode.PUBLIC);
@@ -62,7 +64,10 @@ public class BlockDeferredRegister extends DoubleDeferredRegister<Block, Item> {
             if (Attribute.has(block, AttributeUpgradeSupport.class)) {
                 properties.component(MekanismDataComponents.UPGRADES, UpgradeAware.EMPTY);
             }
-            return itemCreator.apply(block.get(), properties.setId(createSecondaryId(key)).useBlockDescriptionPrefix());
+            if (block instanceof IHasDescription hasDescription) {
+                properties.component(MekanismDataComponents.DESCRIPTION, TextComponentUtil.translate(hasDescription.getDescription()));
+            }
+            return itemCreator.apply(block, properties.setId(createSecondaryId(key)).useBlockDescriptionPrefix());
         }, BlockRegistryObject::new);
     }
 
