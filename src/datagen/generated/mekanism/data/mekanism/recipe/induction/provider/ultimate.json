@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "building",
   "key": {
     "#": "mekanism:ultimate_energy_cube",
     "C": "#c:circuits/ultimate",

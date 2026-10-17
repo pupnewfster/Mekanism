@@ -15,6 +15,7 @@ import mekanism.common.resource.ResourceType;
 import mekanism.common.tags.MekanismTags;
 import mekanism.common.tier.FactoryTier;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -54,6 +55,8 @@ class FactoryRecipeProvider extends BaseSubRecipeProvider {
               .key(Pattern.CIRCUIT, this.items, circuitTag)
               .key(Pattern.INGOT, this.items, ingotTag)
               .key(Pattern.ALLOY, this.items, alloyTag)
+              .category(RecipeCategory.DECORATIONS)//Mirror vanilla work stations
+              .unlockedBy("has_circuit", has(circuitTag))
               .save(consumer, Mekanism.rl(basePath + Attribute.getOrThrow(factory, AttributeFactoryType.class).getFactoryType().getSerializedName()));
     }
 }

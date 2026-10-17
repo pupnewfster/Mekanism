@@ -1,5 +1,6 @@
 {
   "type": "mekanism:mek_data",
+  "category": "building",
   "key": {
     "#": "mekanism:elite_energy_cube",
     "E": "mekanism:energy_tablet",

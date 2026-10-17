@@ -11,9 +11,8 @@ import mekanism.common.registration.impl.BlockRegistryObject;
 import mekanism.common.registries.MekanismBlocks;
 import mekanism.common.tags.MekanismTags;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.references.ItemIds;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
@@ -48,12 +47,16 @@ class TransmitterRecipeProvider extends BaseSubRecipeProvider {
               ).key(Pattern.STEEL, this.items, MekanismTags.Items.INGOTS_STEEL)
               .key(Pattern.REDSTONE, this.items, Tags.Items.DUSTS_REDSTONE)
               .key(Pattern.CONSTANT, this.items, Tags.Items.BARS)
+              .category(RecipeCategory.REDSTONE)
+              .unlockedBy("has_steel_ingot", has(MekanismTags.Items.INGOTS_STEEL))
               .save(consumer, Mekanism.rl(basePath + "diversion_transporter"));
         //Restrictive
         ExtendedShapedRecipeBuilder.shapedRecipe(MekanismBlocks.RESTRICTIVE_TRANSPORTER, 2)
               .pattern(BASIC_TRANSMITTER_PATTERN)
               .key(Pattern.STEEL, this.items, MekanismTags.Items.INGOTS_STEEL)
               .key(Pattern.CONSTANT, this.items, Tags.Items.BARS)
+              .category(RecipeCategory.REDSTONE)//Use the redstone category so it shows up with hoppers
+              .unlockedBy("has_steel_ingot", has(MekanismTags.Items.INGOTS_STEEL))
               .save(consumer, Mekanism.rl(basePath + "restrictive_transporter"));
     }
 
@@ -65,7 +68,7 @@ class TransmitterRecipeProvider extends BaseSubRecipeProvider {
     }
 
     private void addMechanicalPipeRecipes(RecipeOutput consumer, String basePath) {
-        addBasicTransmitterRecipe(consumer, basePath, MekanismBlocks.BASIC_MECHANICAL_PIPE, ItemIds.BUCKET);
+        addBasicTransmitterRecipe(consumer, basePath, MekanismBlocks.BASIC_MECHANICAL_PIPE, Tags.Items.BUCKETS_EMPTY);
         addTransmitterUpgradeRecipe(consumer, basePath, MekanismBlocks.ADVANCED_MECHANICAL_PIPE, MekanismBlocks.BASIC_MECHANICAL_PIPE, MekanismTags.Items.ALLOYS_INFUSED);
         addTransmitterUpgradeRecipe(consumer, basePath, MekanismBlocks.ELITE_MECHANICAL_PIPE, MekanismBlocks.ADVANCED_MECHANICAL_PIPE, MekanismTags.Items.ALLOYS_REINFORCED);
         addTransmitterUpgradeRecipe(consumer, basePath, MekanismBlocks.ULTIMATE_MECHANICAL_PIPE, MekanismBlocks.ELITE_MECHANICAL_PIPE, MekanismTags.Items.ALLOYS_ATOMIC);
@@ -97,14 +100,8 @@ class TransmitterRecipeProvider extends BaseSubRecipeProvider {
               .pattern(BASIC_TRANSMITTER_PATTERN)
               .key(Pattern.STEEL, this.items, MekanismTags.Items.INGOTS_STEEL)
               .key(Pattern.CONSTANT, this.items, itemTag)
-              .save(consumer, Mekanism.rl(basePath + Attribute.getBaseTierNN(transmitter).getLowerName()));
-    }
-
-    private void addBasicTransmitterRecipe(RecipeOutput consumer, String basePath, BlockRegistryObject<?, ?> transmitter, ResourceKey<Item> item) {
-        ExtendedShapedRecipeBuilder.shapedRecipe(transmitter, 8)
-              .pattern(BASIC_TRANSMITTER_PATTERN)
-              .key(Pattern.STEEL, this.items, MekanismTags.Items.INGOTS_STEEL)
-              .key(Pattern.CONSTANT, this.items, item)
+              .category(RecipeCategory.REDSTONE)//Use the redstone category so it shows up with hoppers
+              .unlockedBy("has_steel_ingot", has(MekanismTags.Items.INGOTS_STEEL))
               .save(consumer, Mekanism.rl(basePath + Attribute.getBaseTierNN(transmitter).getLowerName()));
     }
 
@@ -114,6 +111,8 @@ class TransmitterRecipeProvider extends BaseSubRecipeProvider {
               .pattern(TRANSMITTER_UPGRADE_PATTERN)
               .key(Pattern.PREVIOUS, previousTransmitter)
               .key(Pattern.ALLOY, this.items, alloyTag)
+              .category(RecipeCategory.REDSTONE)//Use the redstone category so it shows up with hoppers
+              .unlockedBy("has_alloy", has(alloyTag))
               .save(consumer, Mekanism.rl(basePath + Attribute.getBaseTierNN(transmitter).getLowerName()));
     }
 }

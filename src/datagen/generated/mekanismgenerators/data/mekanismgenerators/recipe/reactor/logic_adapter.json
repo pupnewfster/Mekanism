@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "key": {
     "F": "mekanismgenerators:fusion_reactor_frame",
     "R": "#c:dusts/redstone"

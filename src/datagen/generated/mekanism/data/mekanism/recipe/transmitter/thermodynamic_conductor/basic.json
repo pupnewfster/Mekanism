@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "key": {
     "#": "#c:ingots/copper",
     "S": "#c:ingots/steel"
