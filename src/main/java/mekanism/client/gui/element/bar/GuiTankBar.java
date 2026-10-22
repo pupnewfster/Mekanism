@@ -12,6 +12,7 @@ import mekanism.client.gui.GuiUtils;
 import mekanism.client.gui.GuiUtils.TilingDirection;
 import mekanism.client.gui.IGuiWrapper;
 import mekanism.client.gui.element.bar.GuiTankBar.ResourceTankInfoProvider;
+import mekanism.client.gui.recipe_book.IGhostRecipeComponent;
 import mekanism.client.gui.tooltip.TooltipUtils;
 import mekanism.client.recipe_viewer.interfaces.IRecipeViewerIngredientHelper;
 import mekanism.common.MekanismLang;
@@ -28,6 +29,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.CommonColors;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +37,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.transfer.resource.Resource;
 import org.jspecify.annotations.Nullable;
 
-public abstract class GuiTankBar<RESOURCE extends Resource, CONTAINER extends IResourceContainer<RESOURCE>> extends GuiBar<ResourceTankInfoProvider<RESOURCE, CONTAINER>> implements IRecipeViewerIngredientHelper {
+public abstract class GuiTankBar<RESOURCE extends Resource, CONTAINER extends IResourceContainer<RESOURCE>> extends GuiBar<ResourceTankInfoProvider<RESOURCE, CONTAINER>>
+      implements IRecipeViewerIngredientHelper, IGhostRecipeComponent {
 
     private List<Component> lastInfo = Collections.emptyList();
     @Nullable
@@ -47,9 +50,13 @@ public abstract class GuiTankBar<RESOURCE extends Resource, CONTAINER extends IR
 
     protected abstract TankType getType();
 
+    public CONTAINER getContainer() {
+        return getHandler().getContainer();
+    }
+
     @Override
     public void updateTooltip(int mouseX, int mouseY) {
-        CONTAINER container = getHandler().getContainer();
+        CONTAINER container = getContainer();
         List<Component> info = getContentsTooltips(container.resource(), container.amountAsLong(), TooltipContext.of(minecraft.level), minecraft.player,
               minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
         if (!info.equals(lastInfo)) {
@@ -75,18 +82,33 @@ public abstract class GuiTankBar<RESOURCE extends Resource, CONTAINER extends IR
 
     protected abstract TextureAtlasSprite getIcon(RESOURCE resource);
 
+    protected void renderBarGhostContents(GuiGraphicsExtractor guiGraphics, TextureAtlasSprite icon, int tint, int ghostAmount) {
+        GuiUtils.fill(guiGraphics, relativeX + 1, relativeY + 1, width - 2, height - 2, 0x30FF0000);
+        renderBarContentsDirect(guiGraphics, icon, tint, 0.5);
+        GuiUtils.fill(guiGraphics, relativeX + 1, relativeY + 1, width - 2, height - 2, 0x30FFFFFF);
+        if (ghostAmount != 1) {
+            guiGraphics.pose().pushMatrix();
+            String amountText = String.valueOf(ghostAmount);
+            guiGraphics.text(font(), amountText, relativeX + width - 1 - font().width(amountText), relativeY + 2, CommonColors.WHITE, true);
+            guiGraphics.pose().popMatrix();
+        }
+    }
+
     @Override
     protected void renderBarContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, double handlerLevel) {
-        CONTAINER container = getHandler().getContainer();
+        CONTAINER container = getContainer();
         if (!container.isEmpty()) {
             RESOURCE stored = container.resource();
-            TextureAtlasSprite icon = getIcon(stored);
-            int targetSize = calculateSize(handlerLevel, (horizontal ? width : height) - 2);
-            if (horizontal) {
-                GuiUtils.drawTiledSprite(guiGraphics, relativeX + 1, relativeY + 1, targetSize, height - 2, icon, TilingDirection.DOWN_RIGHT, getRenderColor(stored));
-            } else {
-                GuiUtils.drawTiledSprite(guiGraphics, relativeX + 1, relativeY + 1, height - 2, width - 2, targetSize, icon, TilingDirection.DOWN_RIGHT, getRenderColor(stored));
-            }
+            renderBarContentsDirect(guiGraphics, getIcon(stored), getRenderColor(stored), handlerLevel);
+        }
+    }
+
+    private void renderBarContentsDirect(GuiGraphicsExtractor guiGraphics, TextureAtlasSprite icon, int tint, double handlerLevel) {
+        int targetSize = calculateSize(handlerLevel, (horizontal ? width : height) - 2);
+        if (horizontal) {
+            GuiUtils.drawTiledSprite(guiGraphics, relativeX + 1, relativeY + 1, targetSize, height - 2, icon, TilingDirection.DOWN_RIGHT, tint);
+        } else {
+            GuiUtils.drawTiledSprite(guiGraphics, relativeX + 1, relativeY + 1, height - 2, width - 2, targetSize, icon, TilingDirection.DOWN_RIGHT, tint);
         }
     }
 
@@ -116,7 +138,7 @@ public abstract class GuiTankBar<RESOURCE extends Resource, CONTAINER extends IR
 
     @Override
     public Optional<?> getIngredient(double mouseX, double mouseY) {
-        CONTAINER container = getHandler().getContainer();
+        CONTAINER container = getContainer();
         return container.isEmpty() ? Optional.empty() : Optional.of(toIngredientStack(container.resource(), container.amountAsLong()));
     }
 
