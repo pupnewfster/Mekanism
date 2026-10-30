@@ -57,6 +57,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -180,7 +181,7 @@ public abstract class TileEntityAdvancedElectricMachine<BOOK_CATEGORY extends Me
 
     @Nullable
     @Override
-    public ItemStackChemicalToItemStackRecipe<BOOK_CATEGORY, BOOK_INFO> getRecipe(int cacheIndex) {
+    public RecipeHolder<ItemStackChemicalToItemStackRecipe<BOOK_CATEGORY, BOOK_INFO>> getRecipe(int cacheIndex) {
         return findFirstRecipe(itemInputHandler, chemicalInputHandler);
     }
 
@@ -199,8 +200,6 @@ public abstract class TileEntityAdvancedElectricMachine<BOOK_CATEGORY extends Me
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
               .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks)
               .setBaselineMaxOperations(this::getOperationsPerTick);
     }
 
@@ -223,7 +222,7 @@ public abstract class TileEntityAdvancedElectricMachine<BOOK_CATEGORY extends Me
 
     @Override
     public AdvancedMachineUpgradeData getUpgradeData(HolderLookup.Provider provider) {
-        return new AdvancedMachineUpgradeData(provider, redstone, getControlType(), energyContainer, getOperatingTicks(), usedSoFar, chemicalTank, secondarySlot,
+        return new AdvancedMachineUpgradeData(provider, redstone, getControlType(), energyContainer, recipeCacheLookupMonitor, usedSoFar, chemicalTank, secondarySlot,
               energySlot, inputSlot, outputSlot, getComponents(), problemPath());
     }
 

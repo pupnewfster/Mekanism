@@ -47,6 +47,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.UnknownNullability;
@@ -144,7 +145,7 @@ public class TileEntityChemicalCrystallizer extends TileEntityProgressMachine<Ch
     }
 
     @Override
-    public @Nullable ChemicalCrystallizerRecipe getRecipe(int cacheIndex) {
+    public @Nullable RecipeHolder<ChemicalCrystallizerRecipe> getRecipe(int cacheIndex) {
         return getRecipeType().getInputCache().findFirstRecipe(level, inputHandler.getInput());
     }
 
@@ -156,8 +157,6 @@ public class TileEntityChemicalCrystallizer extends TileEntityProgressMachine<Ch
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
               .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks)
               .setBaselineMaxOperations(this::getOperationsPerTick);
     }
 

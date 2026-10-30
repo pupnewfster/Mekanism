@@ -60,6 +60,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -172,7 +173,7 @@ public class TileEntityMetallurgicInfuser extends TileEntityProgressMachine<Item
 
     @Nullable
     @Override
-    public ItemStackChemicalToItemStackRecipe<MetallurgicInfusingBookCategory, MetallurgicInfusingBookInfo> getRecipe(int cacheIndex) {
+    public RecipeHolder<ItemStackChemicalToItemStackRecipe<MetallurgicInfusingBookCategory, MetallurgicInfusingBookInfo>> getRecipe(int cacheIndex) {
         return findFirstRecipe(itemInputHandler, infusionInputHandler);
     }
 
@@ -192,8 +193,6 @@ public class TileEntityMetallurgicInfuser extends TileEntityProgressMachine<Item
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
               .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks)
               .setBaselineMaxOperations(this::getOperationsPerTick);
     }
 
@@ -204,7 +203,7 @@ public class TileEntityMetallurgicInfuser extends TileEntityProgressMachine<Item
 
     @Override
     public AdvancedMachineUpgradeData getUpgradeData(HolderLookup.Provider provider) {
-        return new AdvancedMachineUpgradeData(provider, redstone, getControlType(), energyContainer, getOperatingTicks(), usedSoFar, infusionTank,
+        return new AdvancedMachineUpgradeData(provider, redstone, getControlType(), energyContainer, recipeCacheLookupMonitor, usedSoFar, infusionTank,
               infusionSlot, energySlot, inputSlot, outputSlot, getComponents(), problemPath());
     }
 

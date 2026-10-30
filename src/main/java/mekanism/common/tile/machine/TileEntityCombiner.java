@@ -47,6 +47,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.UnknownNullability;
@@ -138,7 +139,7 @@ public class TileEntityCombiner extends TileEntityProgressMachine<CombinerRecipe
 
     @Nullable
     @Override
-    public CombinerRecipe getRecipe(int cacheIndex) {
+    public RecipeHolder<CombinerRecipe> getRecipe(int cacheIndex) {
         return findFirstRecipe(inputHandler, extraInputHandler);
     }
 
@@ -150,8 +151,6 @@ public class TileEntityCombiner extends TileEntityProgressMachine<CombinerRecipe
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
               .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks)
               .setBaselineMaxOperations(this::getOperationsPerTick);
     }
 
@@ -162,7 +161,7 @@ public class TileEntityCombiner extends TileEntityProgressMachine<CombinerRecipe
 
     @Override
     public CombinerUpgradeData getUpgradeData(HolderLookup.Provider provider) {
-        return new CombinerUpgradeData(provider, redstone, getControlType(), energyContainer, getOperatingTicks(), energySlot, extraInputSlot, mainInputSlot, outputSlot, getComponents(), problemPath());
+        return new CombinerUpgradeData(provider, redstone, getControlType(), energyContainer, recipeCacheLookupMonitor, energySlot, extraInputSlot, mainInputSlot, outputSlot, getComponents(), problemPath());
     }
 
     public MachineEnergyContainer<TileEntityCombiner> energyContainer() {

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.ToIntBiFunction;
@@ -70,11 +69,13 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Contract;
@@ -94,8 +95,6 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
     protected final ProcessInfo[] processInfoSlots;
     /// This Factory's tier.
     public final FactoryTier tier;
-    /// An int[] used to track all current operations' progress.
-    public final int[] progress;
     /// How many ticks it takes, with upgrades, to run an operation
     private int ticksRequired = BASE_TICKS_REQUIRED;
     private int operationsPerTick = 1;//will increase for modified upgrade multipliers
@@ -144,7 +143,6 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
 
         ejectorComponent.setOutputData(configComponent, TransmissionType.ITEM);
 
-        progress = new int[tier.processes];
         activeStates = new boolean[tier.processes];
         recheckAllRecipeErrors = new BooleanSupplier[tier.processes];
         for (int i = 0; i < recheckAllRecipeErrors.length; i++) {
@@ -303,7 +301,7 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
             }
         }
         //If there is no cached item input, or it doesn't match our fallback then it is an out of date cache, so we ignore the fact that we have a cache
-        RECIPE foundRecipe = findRecipe(fallbackInput, outputSlot, secondaryOutputSlot);
+        RecipeHolder<RECIPE> foundRecipe = findRecipe(fallbackInput, outputSlot, secondaryOutputSlot);
         if (foundRecipe == null) {
             //We could not find any valid recipe for the given item that matches the items in the current output slots
             return null;
@@ -312,11 +310,11 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
             //If we want to update the cache, then create a new cache with the recipe we found and update the cache
             recipeCacheLookupMonitors[process].updateCachedRecipe(foundRecipe);
         }
-        return foundRecipe;
+        return foundRecipe.value();
     }
 
     @Nullable
-    protected abstract RECIPE findRecipe(ItemResource fallbackInput, IInventorySlot outputSlot, @Nullable IInventorySlot secondaryOutputSlot);
+    protected abstract RecipeHolder<RECIPE> findRecipe(ItemResource fallbackInput, IInventorySlot outputSlot, @Nullable IInventorySlot secondaryOutputSlot);
 
     protected abstract int getNeededInput(RECIPE recipe, ItemResource inputType);
 
@@ -349,12 +347,7 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
     public abstract boolean isValidInputItem(ItemResource itemType);
 
     public int getProgress(int cacheIndex) {
-        return progress[cacheIndex];
-    }
-
-    @Override
-    public int getSavedOperatingTicks(int cacheIndex) {
-        return getProgress(cacheIndex);
+        return recipeCacheLookupMonitors[cacheIndex].getSavedOperatingTicks(cacheIndex);
     }
 
     public float getScaledProgress(int i, int process) {
@@ -388,24 +381,28 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
     @Override
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        Optional<int[]> optionalProgress = input.getIntArray(SerializationConstants.PROGRESS);
-        if (optionalProgress.isPresent()) {
-            int[] savedProgress = optionalProgress.get();
-            if (tier.processes != savedProgress.length) {
-                Arrays.fill(progress, 0);
-            }
-            for (int i = 0; i < tier.processes && i < savedProgress.length; i++) {
-                progress[i] = savedProgress[i];
-            }
-        } else {
-            Arrays.fill(progress, 0);
+        for (int i = 0; i < recipeCacheLookupMonitors.length; i++) {
+            recipeCacheLookupMonitors[i].loadAdditional(input.childOrEmpty(SerializationConstants.CACHE + i));
         }
     }
 
     @Override
     public void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putIntArray(SerializationConstants.PROGRESS, Arrays.copyOf(progress, progress.length));
+        for (int i = 0; i < recipeCacheLookupMonitors.length; i++) {
+            recipeCacheLookupMonitors[i].saveAdditional(output.child(SerializationConstants.CACHE + i));
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel) {
+            Vec3 position = Vec3.atCenterOf(pos);
+            for (FactoryRecipeCacheLookupMonitor<RECIPE> recipeCacheLookupMonitor : recipeCacheLookupMonitors) {
+                recipeCacheLookupMonitor.getRecipesToAwardAndPopExperience(serverLevel, position);
+            }
+        }
     }
 
     @Override
@@ -458,7 +455,9 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
     @Override
     public void addContainerTrackers(MekanismContainer container) {
         super.addContainerTrackers(container);
-        container.trackArray(progress);
+        for (FactoryRecipeCacheLookupMonitor<RECIPE> recipeCacheLookupMonitor : recipeCacheLookupMonitors) {
+            container.track(recipeCacheLookupMonitor.operatingTicksAsSyncable());
+        }
         errorTracker.track(container);
         container.track(SyncableLong.create(this::getLastUsage, value -> lastUsage = value));
         container.track(SyncableBoolean.create(this::isSorting, value -> sorting = value));
@@ -473,7 +472,9 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
             energyContainer.copyContents(data.energyContainer, transaction);
             sorting = data.sorting;
             energySlot.copyContents(data.energySlot, transaction);
-            System.arraycopy(data.progress, 0, progress, 0, data.progress.length);
+            for (int i = 0; i < data.cacheLookupMonitors.length; i++) {
+                recipeCacheLookupMonitors[i].inheritSavedOperatingTicks(data.cacheLookupMonitors[i].getSavedOperatingTicks(i));
+            }
             for (int i = 0; i < data.inputSlots.size(); i++) {
                 inputSlots.get(i).copyContents(data.inputSlots.get(i), transaction);
             }
@@ -493,8 +494,8 @@ public abstract class TileEntityFactory<RECIPE extends MekanismRecipe<?, ?, ?>> 
 
     //Methods relating to IComputerTile
     protected void validateValidProcess(int process) throws ComputerException {
-        if (process < 0 || process >= progress.length) {
-            throw new ComputerException("Process: '%d' is out of bounds, as this factory only has '%d' processes (zero indexed).", process, progress.length);
+        if (process < 0 || process >= recipeCacheLookupMonitors.length) {
+            throw new ComputerException("Process: '%d' is out of bounds, as this factory only has '%d' processes (zero indexed).", process, recipeCacheLookupMonitors.length);
         }
     }
 

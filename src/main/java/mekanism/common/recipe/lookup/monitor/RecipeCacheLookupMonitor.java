@@ -1,7 +1,18 @@
 package mekanism.common.recipe.lookup.monitor;
 
 import com.google.common.primitives.Ints;
+import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMaps;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import mekanism.api.IContentsListener;
+import mekanism.api.SerializationConstants;
 import mekanism.api.energy.IEnergyContainer;
 import mekanism.api.recipes.MekanismRecipe;
 import mekanism.api.recipes.cache.CachedRecipe;
@@ -10,10 +21,26 @@ import mekanism.api.recipes.cache.ItemStackConstantChemicalToObjectCachedRecipe;
 import mekanism.common.Mekanism;
 import mekanism.common.recipe.lookup.IRecipeLookupHandler;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.RecipeCraftingHolder;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-public class RecipeCacheLookupMonitor<RECIPE extends MekanismRecipe<?, ?, ?>> implements ICachedRecipeHolder<RECIPE>, IContentsListener {
+public class RecipeCacheLookupMonitor<RECIPE extends MekanismRecipe<?, ?, ?>> implements ICachedRecipeHolder<RECIPE>, IContentsListener, RecipeCraftingHolder {
 
+    /// From [net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity]
+    public static final Codec<Map<ResourceKey<Recipe<?>>, Integer>> RECIPES_USED_CODEC = Codec.unboundedMap(Recipe.KEY_CODEC, Codec.INT);
+
+    private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
     private final IRecipeLookupHandler<RECIPE> handler;
     protected final int cacheIndex;
     @Nullable
@@ -91,9 +118,21 @@ public class RecipeCacheLookupMonitor<RECIPE extends MekanismRecipe<?, ?, ?>> im
         }
     }
 
-    @Override
-    public int getSavedOperatingTicks(int cacheIndex) {
-        return cachedIndexMatches(cacheIndex) ? handler.getSavedOperatingTicks(cacheIndex) : ICachedRecipeHolder.super.getSavedOperatingTicks(cacheIndex);
+    public void usedRecipesLoaded(Map<ResourceKey<Recipe<?>>, Integer> loadedUsage) {
+        this.recipesUsed.clear();
+        this.recipesUsed.putAll(loadedUsage);
+    }
+
+    public Reference2IntMap<ResourceKey<Recipe<?>>> getRecipesUsed() {
+        return this.recipesUsed;
+    }
+
+    public void loadAdditional(ValueInput input) {
+        usedRecipesLoaded(input.read(SerializationConstants.RECIPES_USED, RECIPES_USED_CODEC).orElse(Collections.emptyMap()));
+    }
+
+    public void saveAdditional(ValueOutput output) {
+        output.store(SerializationConstants.RECIPES_USED, RECIPES_USED_CODEC, this.recipesUsed);
     }
 
     @Nullable
@@ -104,14 +143,21 @@ public class RecipeCacheLookupMonitor<RECIPE extends MekanismRecipe<?, ?, ?>> im
 
     @Nullable
     @Override
-    public RECIPE getRecipe(int cacheIndex) {
+    public RecipeHolder<RECIPE> getRecipe(int cacheIndex) {
         return cachedIndexMatches(cacheIndex) ? handler.getRecipe(cacheIndex) : null;
     }
 
     @Nullable
     @Override
-    public CachedRecipe<RECIPE> createNewCachedRecipe(RECIPE recipe, int cacheIndex) {
-        return cachedIndexMatches(cacheIndex) ? handler.createNewCachedRecipe(recipe, cacheIndex) : null;
+    public CachedRecipe<RECIPE> createNewCachedRecipe(RecipeHolder<RECIPE> recipeHolder, int cacheIndex) {
+        if (cachedIndexMatches(cacheIndex)) {
+            return handler.createNewCachedRecipe(recipeHolder.value(), cacheIndex)
+                  .setOnFinish(() -> {
+                      handler.markForSave();
+                      setRecipeUsed(recipeHolder);
+                  });
+        }
+        return null;
     }
 
     @Override
@@ -129,5 +175,53 @@ public class RecipeCacheLookupMonitor<RECIPE extends MekanismRecipe<?, ?, ?>> im
     @Override
     public boolean hasNoRecipe(int cacheIndex) {
         return cachedIndexMatches(cacheIndex) ? hasNoRecipe : ICachedRecipeHolder.super.hasNoRecipe(cacheIndex);
+    }
+
+    @Override
+    public void setRecipeUsed(@Nullable RecipeHolder<?> recipeUsed) {
+        //Filter out synthetic recipe ids
+        if (recipeUsed != null && !recipeUsed.id().identifier().getPath().startsWith("/")) {
+            this.recipesUsed.addTo(recipeUsed.id(), 1);
+        }
+    }
+
+    @Nullable
+    @Override
+    public RecipeHolder<?> getRecipeUsed() {
+        return null;
+    }
+
+    @Override
+    public final void awardUsedRecipes(Player player, List<ItemStack> itemStacks) {
+    }
+
+    public void awardUsedRecipesAndPopExperience(ServerPlayer player) {
+        List<RecipeHolder<?>> recipesToAward = getRecipesToAwardAndPopExperience(player.level(), player.position());
+        player.awardRecipes(recipesToAward);
+
+        for (RecipeHolder<?> recipe : recipesToAward) {
+            player.triggerRecipeCrafted(recipe, this.items);
+        }
+
+        this.recipesUsed.clear();
+    }
+
+    //TODO: Do we need to call this for preRemoveSideEffects for the TEP?
+    public List<RecipeHolder<?>> getRecipesToAwardAndPopExperience(ServerLevel level, Vec3 position) {
+        List<RecipeHolder<?>> recipesToAward = new ArrayList<>();
+        for (ObjectIterator<Reference2IntMap.Entry<ResourceKey<Recipe<?>>>> iterator = Reference2IntMaps.fastIterator(this.recipesUsed); iterator.hasNext(); ) {
+            Reference2IntMap.Entry<ResourceKey<Recipe<?>>> entry = iterator.next();
+            Optional<RecipeHolder<?>> holder = level.recipeAccess().byKey(entry.getKey());
+            if (holder.isPresent()) {
+                RecipeHolder<?> recipeHolder = holder.get();
+                recipesToAward.add(recipeHolder);
+                if (recipeHolder.value() instanceof MekanismRecipe<?, ?, ?> recipe) {
+                    //TODO - 26.3: Support experience?
+                    AbstractFurnaceBlockEntity.createExperience(level, position, entry.getIntValue(), recipe.experience());
+                }
+            }
+        }
+
+        return recipesToAward;
     }
 }

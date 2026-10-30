@@ -58,6 +58,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -224,7 +225,7 @@ public class TileEntityPressurizedReactionChamber extends TileEntityProgressMach
 
     @Nullable
     @Override
-    public PressurizedReactionRecipe getRecipe(int cacheIndex) {
+    public RecipeHolder<PressurizedReactionRecipe> getRecipe(int cacheIndex) {
         return findFirstRecipe(itemInputHandler, fluidInputHandler, gasInputHandler);
     }
 
@@ -236,8 +237,6 @@ public class TileEntityPressurizedReactionChamber extends TileEntityProgressMach
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
               .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks)
               .setBaselineMaxOperations(this::getOperationsPerTick);
     }
 

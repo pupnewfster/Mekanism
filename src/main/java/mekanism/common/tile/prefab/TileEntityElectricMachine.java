@@ -39,6 +39,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.UnknownNullability;
@@ -110,7 +111,7 @@ public abstract class TileEntityElectricMachine<BOOK_CATEGORY extends MekanismBo
 
     @Nullable
     @Override
-    public ItemStackToItemStackRecipe<BOOK_CATEGORY, BOOK_INFO> getRecipe(int cacheIndex) {
+    public RecipeHolder<ItemStackToItemStackRecipe<BOOK_CATEGORY, BOOK_INFO>> getRecipe(int cacheIndex) {
         return findFirstRecipe(inputHandler);
     }
 
@@ -121,9 +122,7 @@ public abstract class TileEntityElectricMachine<BOOK_CATEGORY extends MekanismBo
               .setCanHolderFunction(this::canFunction)
               .setActive(this::setActive)
               .setEnergyRequirements(energyContainer::getEnergyPerTick, energyContainer)
-              .setRequiredTicks(this::getTicksRequired)
-              .setOnFinish(this::markForSave)
-              .setOperatingTicksChanged(this::setOperatingTicks);
+              .setRequiredTicks(this::getTicksRequired);
     }
 
     @Override
@@ -133,7 +132,7 @@ public abstract class TileEntityElectricMachine<BOOK_CATEGORY extends MekanismBo
 
     @Override
     public MachineUpgradeData getUpgradeData(HolderLookup.Provider provider) {
-        return new MachineUpgradeData(provider, redstone, getControlType(), energyContainer, getOperatingTicks(), energySlot, inputSlot, outputSlot, getComponents(), problemPath());
+        return new MachineUpgradeData(provider, redstone, getControlType(), energyContainer, energySlot, recipeCacheLookupMonitor, inputSlot, outputSlot, getComponents(), problemPath());
     }
 
     public MachineEnergyContainer<TileEntityElectricMachine<BOOK_CATEGORY, BOOK_INFO>> energyContainer() {
