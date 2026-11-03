@@ -10,6 +10,7 @@ import mekanism.common.inventory.container.MekanismContainer;
 import mekanism.common.lib.inventory.IAdvancedTransportEjector;
 import mekanism.common.lib.security.SecurityUtils;
 import mekanism.common.network.IMekanismPacket;
+import mekanism.common.recipe.lookup.IRecipeLookupHandler;
 import mekanism.common.tile.TileEntityLogisticalSorter;
 import mekanism.common.tile.TileEntitySecurityDesk;
 import mekanism.common.tile.base.TileEntityMekanism;
@@ -35,6 +36,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.entity.player.Player;
@@ -130,6 +132,11 @@ public record PacketGuiInteract(GuiInteraction interaction, BlockPos tilePositio
         TARGET_DIRECTION_BUTTON((_, tile, _, _) -> {
             if (tile instanceof TileEntityQIODashboard dashboard) {
                 dashboard.toggleShiftClickDirection();
+            }
+        }),
+        COLLECT_XP((_, tile, player, _) -> {
+            if (tile instanceof IRecipeLookupHandler<?> recipeLookupHandler && recipeLookupHandler.hasXpContainment() && player instanceof ServerPlayer serverPlayer) {
+                recipeLookupHandler.awardUsedRecipesAndPopExperience(serverPlayer);
             }
         }),
         DUMP_BUTTON((_, tile, _, _) -> {

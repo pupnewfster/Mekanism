@@ -88,6 +88,7 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -103,6 +104,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.redstone.Redstone;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.NeoForge;
@@ -117,6 +119,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.Nullable;
 
+//TODO - 26.3: Xp containment
 public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunkLoader, IBoundingBlock, ITileFilterHolder<MinerFilter<?>>, IHasVisualization {
 
     public static final int DEFAULT_HEIGHT_RANGE = 60;
@@ -157,6 +160,8 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
     private final Object2IntSortedMap<ItemResource> overflow = new Object2IntLinkedOpenHashMap<>();
     private boolean hasOverflow;
     private boolean recheckOverflow;
+    private final Predicate<ExperienceOrb> xpCollector = this::collectXp;
+    private int storedExperience;
 
     private int delay;
     private int delayLength = MekanismConfig.general.minerTicksPerMine.get();
@@ -168,9 +173,9 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
     private int numPowering;
     private boolean clientRendering;
     @Nullable
-    private Holder<Upgrade> anchorUpgrade;
-    @Nullable
     private Holder<Upgrade> stoneGeneratorUpgrade;
+    @Nullable
+    private Holder<Upgrade> xpContainmentUpgrade;
 
     private final TileComponentChunkLoader<TileEntityDigitalMiner> chunkLoaderComponent = new TileComponentChunkLoader<>(this);
     @Nullable
@@ -517,6 +522,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
                                 List<ItemStack> drops = getDrops(level, state, pos, subTransaction);
                                 if (tryInsert(drops, subTransaction)) {
                                     Mekanism.worldTickHandler.fallbackItemCollector = overflowCollector;
+                                    Mekanism.worldTickHandler.fallbackXpCollector = xpCollector;
                                     //Validate if we can replace the block with the replace stack that we will extract
                                     if (setReplace(level, state, pos, matchingFilter, subTransaction)) {
                                         //Try to add any drops that might have been caused by breaking the block but didn't show up in the loot table.
@@ -541,6 +547,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
                                     }
                                     //Reset the global fallback collector to null as we are done collecting for this miner and block
                                     Mekanism.worldTickHandler.fallbackItemCollector = null;
+                                    Mekanism.worldTickHandler.fallbackXpCollector = null;
                                 }
                             }
                             //Exit out. We either mined the block or don't have room so there is no reason to continue checking
@@ -686,6 +693,23 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
         return true;
     }
 
+    private boolean collectXp(ExperienceOrb orb) {
+        int xp = orb.getValue();
+        if (xp == 0 || getUpgrades(xpContainmentUpgrade) == 0) {
+            //Can't handle the upgrade
+            return false;
+        }
+        int roomFor = Integer.MAX_VALUE - storedExperience;
+        if (xp > roomFor) {
+            //Shrink the amount of xp without overflowing
+            storedExperience = Integer.MAX_VALUE;
+            orb.setValue(xp - roomFor);
+            return false;
+        }
+        storedExperience += xp;
+        return true;
+    }
+
     private boolean trackOverflow(ItemStack stack) {
         //Note: We never expect the stack to be empty but in case it is just don't handle the stack
         if (stack.isEmpty()) {
@@ -813,6 +837,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
         running = input.getBooleanOr(SerializationConstants.RUNNING, false);
         delay = input.getIntOr(SerializationConstants.DELAY, 0);
         numPowering = input.getIntOr(SerializationConstants.NUM_POWERING, 0);
+        storedExperience = input.getIntOr(SerializationConstants.EXPERIENCE, 0);
         searcher.state = input.read(SerializationConstants.STATE, State.CODEC).orElse(State.IDLE);
         if (!initCalc && searcher.state == State.SEARCHING) {
             //If we loaded and haven't started yet, but we were searching when we saved
@@ -841,9 +866,19 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
         energyContainer.updateMinerEnergyPerTick();
         if (upgradesRegistry == null) {
             stoneGeneratorUpgrade = null;
+            xpContainmentUpgrade = null;
         } else {
             //Note: We don't have to reset this on tag reload, as datapack registries do not support being reloaded without the server restarting
             stoneGeneratorUpgrade = upgradesRegistry.get(UpgradeIds.STONE_GENERATOR).orElse(null);
+            xpContainmentUpgrade = upgradesRegistry.get(UpgradeIds.XP_CONTAINMENT).orElse(null);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel && storedExperience > 0) {
+            ExperienceOrb.award(serverLevel, Vec3.atCenterOf(pos), storedExperience);
         }
     }
 
@@ -853,6 +888,7 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
         output.putBoolean(SerializationConstants.RUNNING, running);
         output.putInt(SerializationConstants.DELAY, delay);
         output.putInt(SerializationConstants.NUM_POWERING, numPowering);
+        output.putInt(SerializationConstants.EXPERIENCE, storedExperience);
         output.store(SerializationConstants.STATE, State.CODEC, searcher.state);
         if (!overflow.isEmpty()) {//Persist any items that are stored as overflow
             output.store(SerializationConstants.OVERFLOW, OverflowAware.CODEC, new OverflowAware(overflow));
@@ -1053,6 +1089,10 @@ public class TileEntityDigitalMiner extends TileEntityMekanism implements IChunk
         super.recalculateUpgrades(upgrades, upgrade, totalInstalled);
         if (upgrade.is(UpgradeIds.SPEED)) {
             delayLength = UpgradeUtils.getTicks(MekanismConfig.general.minerTicksPerMine.get(), upgrade, totalInstalled);
+        } else if (upgrade.is(UpgradeIds.XP_CONTAINMENT) && totalInstalled == 0 && storedExperience > 0 && level instanceof ServerLevel serverLevel) {
+            //Drop all stored xp on the ground
+            ExperienceOrb.award(serverLevel, Vec3.atCenterOf(worldPosition), storedExperience);
+            storedExperience = 0;
         }
     }
 

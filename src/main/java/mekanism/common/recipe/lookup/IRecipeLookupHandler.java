@@ -13,6 +13,7 @@ import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import mekanism.common.recipe.lookup.cache.IInputRecipeCache;
 import mekanism.common.registration.impl.RecipeBookCategoryDeferredRegister;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -35,6 +36,13 @@ public interface IRecipeLookupHandler<RECIPE extends MekanismRecipe<?, ?, ?>> ex
     }
 
     void markForSave();
+
+    /// {@return if this lookup handler supports containing experience, or if the corresponding upgrade is installed}
+    default boolean hasXpContainment() {
+        return true;
+    }
+
+    void awardUsedRecipesAndPopExperience(ServerPlayer player);
 
     /// Tries to lookup/get the recipe that a given cacheIndex would represent the slots/tanks/etc. for.
     ///

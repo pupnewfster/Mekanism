@@ -10,9 +10,11 @@ import mekanism.common.inventory.container.MekanismContainer;
 import mekanism.common.inventory.container.entity.robit.MainRobitContainer;
 import mekanism.common.lib.security.SecurityUtils;
 import mekanism.common.network.IMekanismPacket;
+import mekanism.common.recipe.lookup.IRecipeLookupHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.entity.Entity;
@@ -63,6 +65,11 @@ public record PacketEntityGuiInteract(GuiInteractionEntity entityInteraction, in
         CONTAINER_TRACK_SKIN_SELECT((_, player, extra) -> {
             if (player.containerMenu instanceof MainRobitContainer container) {
                 container.startTrackingServer(extra, container);
+            }
+        }),
+        COLLECT_XP((entity, player, _) -> {
+            if (entity instanceof IRecipeLookupHandler<?> recipeLookupHandler && recipeLookupHandler.hasXpContainment() && player instanceof ServerPlayer serverPlayer) {
+                recipeLookupHandler.awardUsedRecipesAndPopExperience(serverPlayer);
             }
         }),
 

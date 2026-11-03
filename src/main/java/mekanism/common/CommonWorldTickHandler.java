@@ -29,6 +29,8 @@ public class CommonWorldTickHandler {
     public boolean monitoringCardboardBox;
     @Nullable
     public Predicate<ItemStack> fallbackItemCollector;
+    @Nullable
+    public Predicate<ExperienceOrb> fallbackXpCollector;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntitySpawn(EntityJoinLevelEvent event) {
@@ -45,11 +47,18 @@ public class CommonWorldTickHandler {
                 entity.discard();
                 event.setCanceled(true);
             }
-        } else if (!event.getLevel().isClientSide() && fallbackItemCollector != null && event.getEntity() instanceof ItemEntity entity && fallbackItemCollector.test(entity.getItem())) {
-            //If we have a fallback item collector active and the entity that is being added is an item,
-            // try to let our fallback collector handle the item and keep track of it instead of actually adding it to the world
-            entity.discard();
-            event.setCanceled(true);
+        } else if (!event.getLevel().isClientSide()) {
+            if (fallbackItemCollector != null && event.getEntity() instanceof ItemEntity entity && fallbackItemCollector.test(entity.getItem())) {
+                //If we have a fallback item collector active and the entity that is being added is an item,
+                // try to let our fallback collector handle the item and keep track of it instead of actually adding it to the world
+                entity.discard();
+                event.setCanceled(true);
+            } else if (fallbackXpCollector != null && event.getEntity() instanceof ExperienceOrb orb && fallbackXpCollector.test(orb)) {
+                //If we have a fallback item collector active and the entity that is being added is an item,
+                // try to let our fallback collector handle the item and keep track of it instead of actually adding it to the world
+                orb.discard();
+                event.setCanceled(true);
+            }
         }
     }
 
