@@ -2,10 +2,7 @@ package mekanism.common.tile.laser;
 
 import mekanism.api.IContentsListener;
 import mekanism.api.energy.IEnergyContainer;
-import mekanism.api.functions.ConstantPredicates;
-import mekanism.common.capabilities.energy.BasicEnergyContainer;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
-import mekanism.common.capabilities.energy.VariableCapacityEnergyContainer;
 import mekanism.common.capabilities.holder.single.BasicSingleHolder;
 import mekanism.common.capabilities.holder.single.ISingleContainerHolder;
 import mekanism.common.config.MekanismConfig;
@@ -21,7 +18,7 @@ public class TileEntityLaser extends TileEntityBasicLaser {
 
     @Override
     protected ISingleContainerHolder<IEnergyContainer> getInitialEnergyContainer(IContentsListener listener) {
-        energyContainer = VariableCapacityEnergyContainer.create(MachineEnergyContainer.validateBlock(this)::getStorage, BasicEnergyContainer.notExternal, ConstantPredicates.alwaysTrue(), listener);
+        energyContainer = MachineEnergyContainer.input(this, listener);
         return new BasicSingleHolder<>(energyContainer, facingSupplier, BACK_ONLY);
     }
 
