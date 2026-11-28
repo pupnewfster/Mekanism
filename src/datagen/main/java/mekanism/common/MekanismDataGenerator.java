@@ -13,12 +13,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import mekanism.api.text.ILangEntry;
+import mekanism.client.integration.athena.IMekAthenaDatagen;
 import mekanism.client.integration.emi.MekanismEmiDefaults;
 import mekanism.client.lang.MekanismLangProvider;
 import mekanism.client.model.MekanismEquipmentAssetProvider;
@@ -28,6 +31,7 @@ import mekanism.client.splash.MekanismSplashProvider;
 import mekanism.client.texture.MekanismSpriteSourceProvider;
 import mekanism.client.texture.PrideRobitTextureProvider;
 import mekanism.common.advancements.MekanismAdvancementProvider;
+import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.computer.ComputerHelpProvider;
 import mekanism.common.lib.FieldReflectionHelper;
 import mekanism.common.loot.MekanismBlockLootTables;
@@ -39,6 +43,7 @@ import net.minecraft.DetectedVersion;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider.SubProviderEntry;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -87,27 +92,19 @@ public class MekanismDataGenerator {
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
-        List<WithConditions<OverlayMetadataSection.OverlayEntry>> clientOverlays = new ArrayList<>();
-        List<WithConditions<OverlayMetadataSection.OverlayEntry>> serverOverlays = new ArrayList<>();
+        List<WithConditions<OverlayMetadataSection.OverlayEntry>> overlays = new ArrayList<>();
+        //Add Athena resource pack overlays
+        registerAthenaOverride(event, overlays);
         //Add compat recipe datapacks
-        registerCompatRecipes(event, "ae2", serverOverlays);
-        registerCompatRecipes(event, "biomesoplenty", serverOverlays);
-        registerCompatRecipes(event, "biomeswevegone", serverOverlays);
-        registerCompatRecipes(event, "farmersdelight", serverOverlays);
+        registerCompatRecipes(event, "ae2", overlays);
+        registerCompatRecipes(event, "biomesoplenty", overlays);
+        registerCompatRecipes(event, "biomeswevegone", overlays);
+        registerCompatRecipes(event, "farmersdelight", overlays);
         //Main mekanism datagen
         PackGenerator packGenerator = event.getDefaultPackGenerator();
         ResourceManager clientResources = event.getResourceManager(PackType.CLIENT_RESOURCES);
         //Client side data generators
-        packGenerator.createProvider(output -> {
-            PackMetadataGenerator metadataGenerator = PackMetadataGenerator.forFeaturePack(output, MekanismLang.PACK_DESCRIPTION.translate());
-            if (!clientOverlays.isEmpty()) {
-                metadataGenerator.add(GeneratingOverlayMetadataSection.type(PackType.CLIENT_RESOURCES), new GeneratingOverlayMetadataSection(clientOverlays));
-            }
-            if (!serverOverlays.isEmpty()) {
-                metadataGenerator.add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(serverOverlays));
-            }
-            return metadataGenerator;
-        });
+        packGenerator.createProvider(output -> forModPack(output, MekanismLang.PACK_DESCRIPTION, overlays));
         packGenerator.createProvider(MekanismLangProvider::new);
         packGenerator.createProvider(output -> new PrideRobitTextureProvider(output, clientResources));
         packGenerator.createProvider(MekanismSoundProvider::new);
@@ -125,10 +122,30 @@ public class MekanismDataGenerator {
         PersistingDisabledProvidersProvider.addDisableableProviders(packGenerator, event.getModContainer());
     }
 
-    private static void registerCompatRecipes(GatherDataEvent.Client event, String compatModId, List<WithConditions<OverlayMetadataSection.OverlayEntry>> serverOverlays) {
+    public static void registerAthenaOverride(GatherDataEvent.Client event, List<WithConditions<OverlayMetadataSection.OverlayEntry>> overlays) {
+        String modid = event.getModContainer().getModId();
+        String directory = MekanismHooks.ATHENA_MOD_ID + "-compat";
+        overlays.add(new WithConditions<>(new OverlayMetadataSection.OverlayEntry(
+              //Calculate the version in the same way as PackMetadataGenerator#forFeaturePack does
+              DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES).minorRange(), directory
+        ), NeoForgeConditions.modLoaded(MekanismHooks.ATHENA_MOD_ID)));
+        PackGenerator packGenerator = event.getPackGenerator(event.getGenerator().getPackOutput(directory));
+        if (Mekanism.hooks.athena.isLoaded()) {
+            IMekAthenaDatagen athenaDatagen = IMekAthenaDatagen.INSTANCES.get(modid);
+            if (athenaDatagen != null) {
+                packGenerator.createProvider(athenaDatagen::modelProvider);
+                PersistingDisabledProvidersProvider.skipNothingInSubPack(packGenerator);
+            }
+        } else {
+            Mekanism.logger.warn("Skipping and persisting existing {} data generated files for Athena connected texture models", modid);
+            PersistingDisabledProvidersProvider.skipSubPack(packGenerator, Collections.singleton(MekanismHooks.ATHENA_MOD_ID), "Athena Models");
+        }
+    }
+
+    private static void registerCompatRecipes(GatherDataEvent.Client event, String compatModId, List<WithConditions<OverlayMetadataSection.OverlayEntry>> overlays) {
         String directory = compatModId + "-compat";
         PackGenerator packGenerator = event.getPackGenerator(event.getGenerator().getPackOutput(directory));
-        serverOverlays.add(new WithConditions<>(new OverlayMetadataSection.OverlayEntry(
+        overlays.add(new WithConditions<>(new OverlayMetadataSection.OverlayEntry(
               //Calculate the version in the same way as PackMetadataGenerator#forFeaturePack does
               DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA).minorRange(), directory
         ), NeoForgeConditions.modLoaded(compatModId)));
@@ -138,12 +155,21 @@ public class MekanismDataGenerator {
                 throw new IllegalStateException("Mod: " + compatModId + " does not have a compat recipe service present");
             }
             packGenerator.createReloadableRegistryObjects(new RegistrySetBuilder().add(RecipeProvider.asBootstrap(compatRecipeDatagen)));
+            PersistingDisabledProvidersProvider.skipNothingInSubPack(packGenerator);
         } else {
             Mekanism.logger.warn("Skipping and persisting existing data generated compat recipes for {}.", compatModId);
             //Data generator to help with persisting data when porting across MC versions when optional deps aren't updated yet
-            // DO NOT ADD OTHERS AFTER THIS ONE
-            PersistingDisabledProvidersProvider.skipRecipeProvider(packGenerator, directory);
+            PersistingDisabledProvidersProvider.skipSubPack(packGenerator, Collections.singleton(directory), "Registries for reloadable");
         }
+    }
+
+    public static PackMetadataGenerator forModPack(PackOutput output, ILangEntry langEntry, List<WithConditions<OverlayMetadataSection.OverlayEntry>> overlays) {
+        PackMetadataGenerator generator = PackMetadataGenerator.forFeaturePack(output, langEntry.translate());
+        if (!overlays.isEmpty()) {
+            //Just add it as the server type as the client and server share the same name
+            return generator.add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(overlays));
+        }
+        return generator;
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)

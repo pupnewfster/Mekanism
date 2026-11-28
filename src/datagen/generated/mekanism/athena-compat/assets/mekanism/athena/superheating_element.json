@@ -1,0 +1,47 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false": {
+      "athena:loader": "athena:ctm",
+      "ctm_textures": {
+        "default": {
+          "center": "mekanism:athena/ctm/superheating_element/center",
+          "empty": "mekanism:athena/ctm/superheating_element/empty",
+          "horizontal": "mekanism:athena/ctm/superheating_element/horizontal",
+          "particle": "mekanism:block/superheating_element",
+          "vertical": "mekanism:athena/ctm/superheating_element/vertical"
+        }
+      }
+    },
+    "active=true": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/superheating_element_on/center",
+              "empty": "mekanism:athena/ctm/superheating_element_on/empty",
+              "horizontal": "mekanism:athena/ctm/superheating_element_on/horizontal",
+              "particle": "mekanism:block/superheating_element_on",
+              "vertical": "mekanism:athena/ctm/superheating_element_on/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/superheating_element_on_led/center",
+              "empty": "mekanism:athena/ctm/superheating_element_on_led/empty",
+              "horizontal": "mekanism:athena/ctm/superheating_element_on_led/horizontal",
+              "particle": "mekanism:block/superheating_element_on_led",
+              "vertical": "mekanism:athena/ctm/superheating_element_on_led/vertical"
+            }
+          },
+          "light_emission": 15
+        }
+      ]
+    }
+  }
+}

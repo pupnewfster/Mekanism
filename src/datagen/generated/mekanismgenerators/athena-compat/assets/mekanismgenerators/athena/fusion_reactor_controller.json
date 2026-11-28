@@ -1,0 +1,51 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanismgenerators:connected_texture_connection/fusion"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanismgenerators:athena/ctm/fusion_reactor_frame/center",
+          "empty": "mekanismgenerators:athena/ctm/fusion_reactor_frame/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_frame/horizontal",
+          "particle": "mekanismgenerators:block/fusion_reactor_frame",
+          "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_frame/vertical"
+        },
+        "up": {
+          "center": "mekanismgenerators:athena/ctm/fusion_reactor_controller/center",
+          "empty": "mekanismgenerators:athena/ctm/fusion_reactor_controller/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_controller/horizontal",
+          "particle": "mekanismgenerators:block/fusion_reactor_controller",
+          "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_controller/vertical"
+        }
+      }
+    },
+    "active=true": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanismgenerators:connected_texture_connection/fusion"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanismgenerators:athena/ctm/fusion_reactor_frame/center",
+          "empty": "mekanismgenerators:athena/ctm/fusion_reactor_frame/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_frame/horizontal",
+          "particle": "mekanismgenerators:block/fusion_reactor_frame",
+          "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_frame/vertical"
+        },
+        "up": {
+          "center": "mekanismgenerators:athena/ctm/fusion_reactor_controller_on/center",
+          "empty": "mekanismgenerators:athena/ctm/fusion_reactor_controller_on/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_controller_on/horizontal",
+          "particle": "mekanismgenerators:block/fusion_reactor_controller_on",
+          "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_controller_on/vertical"
+        }
+      }
+    }
+  }
+}

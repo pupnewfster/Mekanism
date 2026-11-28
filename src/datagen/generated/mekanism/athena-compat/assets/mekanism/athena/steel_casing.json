@@ -1,0 +1,12 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/steel_casing/center",
+      "empty": "mekanism:athena/ctm/steel_casing/empty",
+      "horizontal": "mekanism:athena/ctm/steel_casing/horizontal",
+      "particle": "mekanism:block/steel_casing",
+      "vertical": "mekanism:athena/ctm/steel_casing/vertical"
+    }
+  }
+}

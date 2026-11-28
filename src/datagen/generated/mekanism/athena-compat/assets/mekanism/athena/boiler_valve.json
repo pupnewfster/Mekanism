@@ -1,0 +1,98 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "mode=input": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/boiler"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/boiler_valve_input/center",
+              "empty": "mekanism:athena/ctm/boiler_valve_input/empty",
+              "horizontal": "mekanism:athena/ctm/boiler_valve_input/horizontal",
+              "particle": "mekanism:block/boiler_valve_input",
+              "vertical": "mekanism:athena/ctm/boiler_valve_input/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/boiler_valve_input_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    },
+    "mode=output_coolant": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/boiler"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/boiler_valve_output_coolant/center",
+              "empty": "mekanism:athena/ctm/boiler_valve_output_coolant/empty",
+              "horizontal": "mekanism:athena/ctm/boiler_valve_output_coolant/horizontal",
+              "particle": "mekanism:block/boiler_valve_output_coolant",
+              "vertical": "mekanism:athena/ctm/boiler_valve_output_coolant/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/boiler_valve_output_coolant_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    },
+    "mode=output_steam": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/boiler"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/boiler_valve_output_steam/center",
+              "empty": "mekanism:athena/ctm/boiler_valve_output_steam/empty",
+              "horizontal": "mekanism:athena/ctm/boiler_valve_output_steam/horizontal",
+              "particle": "mekanism:block/boiler_valve_output_steam",
+              "vertical": "mekanism:athena/ctm/boiler_valve_output_steam/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/boiler_valve_output_steam_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    }
+  }
+}

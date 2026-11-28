@@ -1,0 +1,38 @@
+{
+  "athena:loader": "athena:composite",
+  "models": [
+    {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/teleporter"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanism:athena/ctm/teleporter_frame/center",
+          "empty": "mekanism:athena/ctm/teleporter_frame/empty",
+          "horizontal": "mekanism:athena/ctm/teleporter_frame/horizontal",
+          "particle": "mekanism:block/teleporter_frame",
+          "vertical": "mekanism:athena/ctm/teleporter_frame/vertical"
+        }
+      }
+    },
+    {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/teleporter"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanism:athena/ctm/teleporter_frame_led/center",
+          "empty": "mekanism:athena/ctm/teleporter_frame_led/empty",
+          "horizontal": "mekanism:athena/ctm/teleporter_frame_led/horizontal",
+          "particle": "mekanism:block/teleporter_frame_led",
+          "vertical": "mekanism:athena/ctm/teleporter_frame_led/vertical"
+        }
+      },
+      "light_emission": 15
+    }
+  ]
+}

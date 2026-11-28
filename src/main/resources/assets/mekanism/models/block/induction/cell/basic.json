@@ -1,5 +1,5 @@
 {
-    "parent": "mekanism:block/induction/cell/base",
+    "parent": "mekanism:block/template/cube_all_led_glow",
     "textures": {
         "particle": "mekanism:block/basic_induction_cell",
         "all": "mekanism:block/basic_induction_cell",

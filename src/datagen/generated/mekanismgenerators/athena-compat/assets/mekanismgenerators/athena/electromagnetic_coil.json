@@ -1,0 +1,12 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/electromagnetic_coil/center",
+      "empty": "mekanismgenerators:athena/ctm/electromagnetic_coil/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/electromagnetic_coil/horizontal",
+      "particle": "mekanismgenerators:block/electromagnetic_coil",
+      "vertical": "mekanismgenerators:athena/ctm/electromagnetic_coil/vertical"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false,facing=east": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "east": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=false,facing=north": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "north": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=false,facing=south": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "south": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=false,facing=west": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "west": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=true,facing=east": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "east": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=true,facing=north": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "north": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=true,facing=south": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "south": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    },
+    "active=true,facing=west": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/tep"
+      },
+      "ctm_textures": {
+        "default": "mekanism:athena/ctm_full/thermal_evaporation_block",
+        "west": {
+          "center": "mekanism:athena/ctm/thermal_evaporation_controller/center",
+          "empty": "mekanism:athena/ctm/thermal_evaporation_controller/empty",
+          "horizontal": "mekanism:athena/ctm/thermal_evaporation_controller/horizontal",
+          "particle": "mekanism:block/thermal_evaporation_controller",
+          "vertical": "mekanism:athena/ctm/thermal_evaporation_controller/vertical"
+        }
+      }
+    }
+  }
+}

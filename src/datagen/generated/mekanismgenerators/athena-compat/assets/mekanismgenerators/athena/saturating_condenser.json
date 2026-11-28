@@ -1,0 +1,12 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/saturating_condenser/center",
+      "empty": "mekanismgenerators:athena/ctm/saturating_condenser/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/saturating_condenser/horizontal",
+      "particle": "mekanismgenerators:block/saturating_condenser",
+      "vertical": "mekanismgenerators:athena/ctm/saturating_condenser/vertical"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/matrix/exterior"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/induction_port/center",
+              "empty": "mekanism:athena/ctm/induction_port/empty",
+              "horizontal": "mekanism:athena/ctm/induction_port/horizontal",
+              "particle": "mekanism:block/induction_port",
+              "vertical": "mekanism:athena/ctm/induction_port/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/induction_port_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    },
+    "active=true": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/matrix/exterior"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/induction_port_output/center",
+              "empty": "mekanism:athena/ctm/induction_port_output/empty",
+              "horizontal": "mekanism:athena/ctm/induction_port_output/horizontal",
+              "particle": "mekanism:block/induction_port_output",
+              "vertical": "mekanism:athena/ctm/induction_port_output/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/induction_port_output_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    }
+  }
+}

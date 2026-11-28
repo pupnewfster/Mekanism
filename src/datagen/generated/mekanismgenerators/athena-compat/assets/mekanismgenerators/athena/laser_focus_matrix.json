@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismgenerators:connected_texture_connection/reactor_glass"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/laser_focus_matrix/center",
+      "empty": "mekanismgenerators:athena/ctm/laser_focus_matrix/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/laser_focus_matrix/horizontal",
+      "particle": "mekanismgenerators:block/laser_focus_matrix",
+      "vertical": "mekanismgenerators:athena/ctm/laser_focus_matrix/vertical"
+    }
+  }
+}

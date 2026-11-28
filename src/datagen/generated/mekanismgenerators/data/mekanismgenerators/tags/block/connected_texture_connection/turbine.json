@@ -1,0 +1,7 @@
+{
+  "values": [
+    "mekanismgenerators:turbine_casing",
+    "mekanismgenerators:turbine_valve",
+    "mekanismgenerators:turbine_vent"
+  ]
+}

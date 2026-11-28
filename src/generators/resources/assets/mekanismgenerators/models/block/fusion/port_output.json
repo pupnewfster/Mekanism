@@ -1,6 +1,7 @@
 {
-  "parent": "mekanismgenerators:block/fusion/port",
+  "parent": "mekanism:block/template/cube_all_led",
   "textures": {
-    "all": "mekanismgenerators:block/reactor_port_output"
+    "all": "mekanismgenerators:block/fusion_reactor_port_output",
+    "led": "mekanismgenerators:block/fusion_reactor_port_output_led"
   }
 }

@@ -1,0 +1,17 @@
+{
+  "athena:loader": "mekanism:block_slab_stairs_ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismadditions:connected_texture_connection/light_gray/transparent"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismadditions:athena/ctm/transparent_plastic_block/center",
+      "empty": "mekanismadditions:athena/ctm/transparent_plastic_block/empty",
+      "horizontal": "mekanismadditions:athena/ctm/transparent_plastic_block/horizontal",
+      "particle": "mekanismadditions:block/transparent_plastic_block",
+      "vertical": "mekanismadditions:athena/ctm/transparent_plastic_block/vertical"
+    }
+  },
+  "tint": 0
+}

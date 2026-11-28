@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismgenerators:connected_texture_connection/fission"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/fission_reactor_logic_adapter/center",
+      "empty": "mekanismgenerators:athena/ctm/fission_reactor_logic_adapter/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/fission_reactor_logic_adapter/horizontal",
+      "particle": "mekanismgenerators:block/fission_reactor_logic_adapter",
+      "vertical": "mekanismgenerators:athena/ctm/fission_reactor_logic_adapter/vertical"
+    }
+  }
+}

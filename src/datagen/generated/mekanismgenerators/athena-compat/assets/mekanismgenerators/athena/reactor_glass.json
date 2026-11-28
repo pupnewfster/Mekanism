@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismgenerators:connected_texture_connection/reactor_glass"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/reactor_glass/center",
+      "empty": "mekanismgenerators:athena/ctm/reactor_glass/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/reactor_glass/horizontal",
+      "particle": "mekanismgenerators:block/reactor_glass",
+      "vertical": "mekanismgenerators:athena/ctm/reactor_glass/vertical"
+    }
+  }
+}

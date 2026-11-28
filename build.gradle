@@ -61,6 +61,7 @@ ext {
     //Integrations that we sometimes have to disable compilation of when porting to newer mc versions
     integrations = [
             'ae2'             : new IntegrationSettings(shouldCompile: true, scope: IntegrationScope.DATA_ONLY),
+            'athena'          : new IntegrationSettings(shouldCompile: true, scope: IntegrationScope.ALL, perModule: PerModule.DATA_ONLY),
             'biomes_o_plenty' : new IntegrationSettings(shouldCompile: true, scope: IntegrationScope.DATA_ONLY),
             'biomes_weve_gone': new IntegrationSettings(shouldCompile: false, scope: IntegrationScope.DATA_ONLY),
             'computer_craft'  : new IntegrationSettings(shouldCompile: true),
@@ -68,8 +69,8 @@ ext {
             'curios'          : new IntegrationSettings(shouldCompile: true),
             'emi'             : new IntegrationSettings(shouldCompile: false, scope: IntegrationScope.ALL, perModule: PerModule.MODULE_ONLY),
             'farmers_delight' : new IntegrationSettings(shouldCompile: false, scope: IntegrationScope.DATA_ONLY),
-            'framedblocks'    : new IntegrationSettings(shouldCompile: true),
-            'gender'          : new IntegrationSettings(shouldCompile: true, scope: IntegrationScope.DATA_ONLY, perModule: PerModule.ALL),
+            'framedblocks'    : new IntegrationSettings(shouldCompile: false),
+            'gender'          : new IntegrationSettings(shouldCompile: true, scope: IntegrationScope.DATA_ONLY, perModule: PerModule.DATA_ONLY),
             'jade'            : new IntegrationSettings(shouldCompile: true),
             'jei'             : new IntegrationSettings(shouldCompile: true, perModule: PerModule.MODULE_ONLY),
             'nerb'            : new IntegrationSettings(shouldCompile: true),
@@ -162,17 +163,15 @@ for (String name : secondaryModules) {
     sourceSet.compileClasspath += sourceSets.main.output
     //Expose the module's created source set to the corresponding per module integrations
     for (def integration : integrations as Map<String, IntegrationSettings>) {
-        if (integration.value.perModule().enabled()) {
-            if (integration.value.scope().hasBase) {
-                def integrationSource = getIntegrationSourceSet(integration.key, name).get()
-                integrationSource.compileClasspath += sourceSet.output
-                integrationSource.runtimeClasspath += sourceSet.runtimeClasspath
-            }
-            if (integration.value.scope().hasData && integration.value.perModule().datagen()) {
-                def integrationDataSource = getIntegrationDataSourceSet(integration.key, name).get()
-                integrationDataSource.compileClasspath += sourceSet.output
-                integrationDataSource.runtimeClasspath += sourceSet.runtimeClasspath
-            }
+        if (integration.value.scope().hasBase && integration.value.perModule().hasModule()) {
+            def integrationSource = getIntegrationSourceSet(integration.key, name).get()
+            integrationSource.compileClasspath += sourceSet.output
+            integrationSource.runtimeClasspath += sourceSet.runtimeClasspath
+        }
+        if (integration.value.scope().hasData && integration.value.perModule().datagen()) {
+            def integrationDataSource = getIntegrationDataSourceSet(integration.key, name).get()
+            integrationDataSource.compileClasspath += sourceSet.output
+            integrationDataSource.runtimeClasspath += sourceSet.runtimeClasspath
         }
     }
     //Create all secondary sourceSets for this module
@@ -199,7 +198,7 @@ def setupIntegrationSourceSet(String name, IntegrationSettings settings) {
     if (settings.scope().hasBase) {
         integration = sourceSets.create(IntegrationSettings.getName(name))
         String path = name
-        if (settings.perModule().enabled()) {
+        if (settings.perModule().hasModule()) {
             path += '/main'
         }
         integration.java.srcDirs = ["src/integration/${path}/java"]
@@ -257,7 +256,7 @@ def setupIntegrationSourceSet(String name, IntegrationSettings settings) {
         //Setup per module integrations
         for (String module : secondaryModules) {
             SourceSet moduleIntegration = null
-            if (integration != null) {
+            if (integration != null && settings.perModule().hasModule()) {
                 moduleIntegration = sourceSets.create(IntegrationSettings.getName(name, module))
                 moduleIntegration.java.srcDirs = ["src/integration/${name}/${module}/java"]
                 moduleIntegration.resources.srcDirs = ["src/integration/${name}/${module}/resources"]
@@ -439,7 +438,7 @@ void setupTasks(SourceSet sourceSet) {
     tasks.named(sourceSet.processResourcesTaskName, ProcessResources, {
         duplicatesStrategy = DuplicatesStrategy.FAIL
         var versionProperties = ['file'       : ['jarVersion': mod_version], 'mc_version': minecraft_version_range, 'neo_version': neo_version_range,
-                                 'jei_version': jei_version_range, 'nerb_version': nerb_version_range]
+                                 'jei_version': jei_version_range, 'athena_version': athena_version_range, 'nerb_version': nerb_version_range]
         //Mark the properties as inputs so that when they change things update
         inputs.properties(versionProperties)
         filesMatching('META-INF/neoforge.mods.toml') { expand(versionProperties) }
@@ -471,7 +470,7 @@ def mergeServiceDescriptors = tasks.register('mergeDataServiceDescriptors', Merg
     for (def integration : integrations as Map<String, IntegrationSettings>) {
         if (integration.value.shouldCompile() && integration.value.scope().hasData) {
             String path = integration.key
-            if (integration.value.perModule().enabled()) {
+            if (integration.value.perModule().datagen()) {
                 path += '/main'
             }
             if (resources == null) {
@@ -499,10 +498,8 @@ void forEachIntegrationSourceSet(Consumer<SourceSet> consumer) {
         if (integration.value.shouldCompile()) {
             if (integration.value.scope().hasBase) {
                 consumer.accept(getIntegrationSourceSet(integration.key).get())
-            }
-            if (integration.value.perModule().enabled()) {
-                for (String module : secondaryModules) {
-                    if (integration.value.scope().hasBase) {
+                if (integration.value.perModule().hasModule()) {
+                    for (String module : secondaryModules) {
                         consumer.accept(getIntegrationSourceSet(integration.key, module).get())
                     }
                 }
@@ -576,7 +573,7 @@ neoForge {
         moduleMod.configure({
             modSourceSets.add(getSourceSet(name))
             for (def integration : integrations as Map<String, IntegrationSettings>) {
-                if (integration.value.shouldCompile() && integration.value.perModule().enabled() && integration.value.scope().hasBase) {
+                if (integration.value.shouldCompile() && integration.value.scope().hasBase && integration.value.perModule().hasModule()) {
                     modSourceSets.add(getIntegrationSourceSet(integration.key, name))
                 }
             }
@@ -587,8 +584,8 @@ neoForge {
             modSourceSets.add(sourceSet)
             modSourceSets.add(sourceSet.flatMap(s -> getExtraSourceSet(s, 'datagen')))
             for (def integration : integrations as Map<String, IntegrationSettings>) {
-                if (integration.value.shouldCompile() && integration.value.scope().hasData && integration.value.perModule().enabled()) {
-                    if (integration.value.scope().hasBase) {
+                if (integration.value.shouldCompile() && integration.value.scope().hasData) {
+                    if (integration.value.perModule().hasModule() && integration.value.scope().hasBase) {
                         //Add the base data so that it can be accessed by the datagen portion of the integration
                         modSourceSets.add(getIntegrationSourceSet(integration.key, name))
                     }
@@ -710,7 +707,7 @@ repositories { RepositoryHandler handler ->
     })
     exclusiveRepo(handler, 'https://repo.sleeping.town/', 'dev.emi')
     exclusiveRepo(handler, 'https://maven.theillusivec4.top/', 'top.theillusivec4.curios')
-    exclusiveRepo(handler, 'https://maven.tterrag.com/', 'team.chisel.ctm')
+    //exclusiveRepo(handler, 'https://maven.teamresourceful.com/repository/maven-public/', 'earth.terrarium.athena')
     exclusiveRepo(handler, 'https://maven.squiddev.cc', 'cc.tweaked')
     exclusiveRepo(handler, 'https://maven2.bai.lol', 'lol.bai', 'mcp.mobius.waila')//WTHIT
     exclusiveRepo(handler, 'https://www.cursemaven.com', 'curse.maven')
@@ -725,6 +722,7 @@ repositories { RepositoryHandler handler ->
             includeGroup('org.appliedenergistics')
         }
     }
+    mavenLocal()
     int prIndex = neo_version.indexOf('-pr-')
     if (prIndex != -1) {//Automatically support looking up any Neo PR versions
         def pr = neo_version.substring(prIndex + 4).split('-')[0]
@@ -782,9 +780,9 @@ dependencies {
         datagenIntegrationEmiLocalRuntime(emi)
     }
 
-    if (ctm_version.startsWith(major_minecraft_version)) {
-        localRuntime("team.chisel.ctm:CTM:${ctm_version}")
-    }
+    def athena = "earth.terrarium.athena:athena-neoforge-${major_minecraft_version}:${athena_version}"
+    integrationAthenaCompileOnly(athena)
+    integrationAthenaLocalRuntime(athena)
 
     integrationTheOneProbeCompileOnly("mcjty.theoneprobe:theoneprobe:${top_version}:api")
     integrationTheOneProbeLocalRuntime("mcjty.theoneprobe:theoneprobe:${top_version}") {
@@ -860,7 +858,7 @@ def getManifestAttributes(String title) {
 void addIntegrationFiles(AbstractCopyTask task, SourceSet baseSourceSet, Transformer<?, SourceSet> transformer) {
     for (def integration : integrations as Map<String, IntegrationSettings>) {
         if (integration.value.shouldCompile() && integration.value.scope().hasBase) {
-            if (SourceSet.isMain(baseSourceSet) || integration.value.perModule().enabled()) {
+            if (SourceSet.isMain(baseSourceSet) || integration.value.perModule().hasModule()) {
                 def integrationSourceSet = getIntegrationSourceSet(integration.key, baseSourceSet.name)
                 task.from(integrationSourceSet.map(transformer))
                 task.dependsOn(integrationSourceSet.map(s -> s.classesTaskName))
@@ -996,7 +994,7 @@ tasks.register('generatePackageInfos', GeneratePackageInfos, {
         def perModule = integration.value.perModule()
         if (perModule.enabled()) {
             for (String module : secondaryModules) {
-                if (scope.hasBase) {
+                if (scope.hasBase && perModule.hasModule()) {
                     files.from(getIntegrationSourceSet(integration.key, module).get().java.srcDirTrees)
                 }
                 if (scope.hasData && perModule.datagen()) {
@@ -1108,7 +1106,7 @@ if (System.getenv('CURSEFORGE_KEY') != null || project.hasProperty('curseforgeKe
                     //World gen
                     'biomes-o-plenty', 'oh-the-biomes-weve-gone',
                     //Misc
-                    'applied-energistics-2', 'ctm', 'curios', 'dark-mode-everywhere', 'farmers-delight', 'female-gender-neoforge',
+                    'applied-energistics-2', 'athena', 'curios', 'dark-mode-everywhere', 'farmers-delight', 'female-gender-neoforge',
                     'framedblocks', 'perviaminvenire', 'projecte', 'recipe-stages'
             )
         }

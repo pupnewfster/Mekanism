@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismgenerators:connected_texture_connection/turbine"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/turbine_valve/center",
+      "empty": "mekanismgenerators:athena/ctm/turbine_valve/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/turbine_valve/horizontal",
+      "particle": "mekanismgenerators:block/turbine_valve",
+      "vertical": "mekanismgenerators:athena/ctm/turbine_valve/vertical"
+    }
+  }
+}

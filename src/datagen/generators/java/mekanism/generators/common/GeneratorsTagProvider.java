@@ -39,6 +39,7 @@ public class GeneratorsTagProvider extends BaseTagProvider {
         addDamageTypes();
         addMultiblocks();
         addHarvestRequirements();
+        addCTM();
         getBuilder(BlockTags.IMPERMEABLE).add(GeneratorsBlocks.REACTOR_GLASS);
         getBuilder(BlockTags.DANGEROUS_FOR_TELEPORTATION).addAsBlocks(GeneratorTags.BlockItems.STRUCTURES_REACTORS);
 
@@ -51,6 +52,29 @@ public class GeneratorsTagProvider extends BaseTagProvider {
               GeneratorsBlocks.GAS_BURNING_GENERATOR,
               GeneratorsBlocks.BIO_GENERATOR,
               GeneratorsBlocks.WIND_GENERATOR
+        );
+    }
+
+    private void addCTM() {
+        getBuilder(GeneratorTags.Blocks.CT_FISSION).add(
+              GeneratorsBlocks.FISSION_REACTOR_CASING,
+              GeneratorsBlocks.FISSION_REACTOR_LOGIC_ADAPTER,
+              GeneratorsBlocks.FISSION_REACTOR_PORT
+        );
+        getBuilder(GeneratorTags.Blocks.CT_FUSION).add(
+              GeneratorsBlocks.FUSION_REACTOR_FRAME,
+              GeneratorsBlocks.FUSION_REACTOR_LOGIC_ADAPTER,
+              GeneratorsBlocks.FUSION_REACTOR_PORT,
+              GeneratorsBlocks.FUSION_REACTOR_CONTROLLER
+        );
+        getBuilder(GeneratorTags.Blocks.CT_REACTOR_GLASS).add(
+              GeneratorsBlocks.REACTOR_GLASS,
+              GeneratorsBlocks.LASER_FOCUS_MATRIX
+        );
+        getBuilder(GeneratorTags.Blocks.CT_TURBINE).add(
+              GeneratorsBlocks.TURBINE_CASING,
+              GeneratorsBlocks.TURBINE_VALVE,
+              GeneratorsBlocks.TURBINE_VENT
         );
     }
 

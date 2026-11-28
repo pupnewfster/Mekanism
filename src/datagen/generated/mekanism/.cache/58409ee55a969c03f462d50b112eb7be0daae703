@@ -1,4 +1,4 @@
-// 26.3	2026-11-06T15:29:45.7827468	mekanism-global/Tags: mekanism
+// 26.3	2026-11-27T13:19:04.982659	mekanism-global/Tags: mekanism
 8a89da3b810e00ad44b7ee4d062a88db6298c8fe data/create/tags/fluid/no_infinite_draining.json
 b881c0bb158879ac88758c2b0562b422271e6397 data/c/tags/block/barrels.json
 adb3ecfd3180c123cdc984320eab5ce930bdc5be data/c/tags/block/barrels/personal.json
@@ -171,6 +171,14 @@ a0e1d0be802d6dafd3d9be7540058fffce14f805 data/c/tags/item/tools/wrench.json
 7db9e50a7f631c26e2413f5904f60754f004c003 data/mekanism/tags/block/bins.json
 29cc067dc1db03793fda0908a6d117b12082b288 data/mekanism/tags/block/cardboard_blacklist.json
 ad826894dac5548acf9e18a20944234e8e7754a2 data/mekanism/tags/block/chemical_tanks.json
+15d3a74ae22a6d4c26239230eba07128396e3668 data/mekanism/tags/block/connected_texture_connection/boiler.json
+7a331c0679a266085dead4e0fdc757867d9f4e3d data/mekanism/tags/block/connected_texture_connection/matrix/exterior.json
+1187b220a30db1e2b6cf46520e36c77854ea6294 data/mekanism/tags/block/connected_texture_connection/matrix/interior.json
+af7ce6199929f6125e139c9bc9ee46bfab016ed5 data/mekanism/tags/block/connected_texture_connection/sps.json
+82609011027adf63a2c28a29af5035bafcbca56e data/mekanism/tags/block/connected_texture_connection/structural_glass.json
+cf388d9273536ee210d1c9d48d5844825f28b9cb data/mekanism/tags/block/connected_texture_connection/tank.json
+a02478d520184adcd364731570313933a18d40ad data/mekanism/tags/block/connected_texture_connection/teleporter.json
+d246547fcf0fcddcac8aaa7d930b63b097487e84 data/mekanism/tags/block/connected_texture_connection/tep.json
 0358f9eb60c106dac65aafcdb968c938b35578b9 data/mekanism/tags/block/energy_cubes.json
 60dbdbd0cf4e31453fae580c84ced6c7fbbc4789 data/mekanism/tags/block/factories.json
 f5ec3bae50b97dddd3b3ebc227422e1dee25fb9d data/mekanism/tags/block/factories/combining.json

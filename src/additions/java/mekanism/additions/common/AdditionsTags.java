@@ -1,17 +1,34 @@
 package mekanism.additions.common;
 
+import mekanism.api.text.EnumColorCollection;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 public class AdditionsTags {
 
     private AdditionsTags() {
+    }
+
+    public static class Blocks {
+
+        private Blocks() {
+        }
+
+        public static final EnumColorCollection<TagKey<Block>> CT_PLASTIC_GLOW = EnumColorCollection.NAMES.map(name -> connectionTag(name + "/glow"));
+        public static final EnumColorCollection<TagKey<Block>> CT_PLASTIC_PLASTIC = EnumColorCollection.NAMES.map(name -> connectionTag(name + "/plastic"));
+        public static final EnumColorCollection<TagKey<Block>> CT_PLASTIC_TRANSPARENT = EnumColorCollection.NAMES.map(name -> connectionTag(name + "/transparent"));
+
+        private static TagKey<Block> connectionTag(String name) {
+            return BlockTags.create(MekanismAdditions.rl("connected_texture_connection/" + name));
+        }
     }
 
     public static class BlockItems {

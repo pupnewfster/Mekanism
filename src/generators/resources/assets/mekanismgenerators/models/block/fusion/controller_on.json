@@ -1,6 +1,6 @@
 {
   "parent": "mekanismgenerators:block/fusion/controller",
   "textures": {
-    "up": "mekanismgenerators:block/reactor_controller_on"
+    "up": "mekanismgenerators:block/fusion_reactor_controller_on"
   }
 }

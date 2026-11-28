@@ -5,13 +5,30 @@ import mekanism.api.chemical.Chemical;
 import mekanism.common.Mekanism;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 public class GeneratorTags {
 
     private GeneratorTags() {
+    }
+
+    public static class Blocks {
+
+        private Blocks() {
+        }
+
+        public static final TagKey<Block> CT_FISSION = connectionTag("fission");
+        public static final TagKey<Block> CT_FUSION = connectionTag("fusion");
+        public static final TagKey<Block> CT_REACTOR_GLASS = connectionTag("reactor_glass");
+        public static final TagKey<Block> CT_TURBINE = connectionTag("turbine");
+
+        private static TagKey<Block> connectionTag(String name) {
+            return BlockTags.create(MekanismGenerators.rl("connected_texture_connection/" + name));
+        }
     }
 
     public static class BlockItems {

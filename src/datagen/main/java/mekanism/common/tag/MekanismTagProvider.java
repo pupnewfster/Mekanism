@@ -227,6 +227,40 @@ public class MekanismTagProvider extends BaseTagProvider {
         getBuilder(FRAMEABLE).add(MekanismBlocks.STRUCTURAL_GLASS);
         getBuilder(FB_BE_WHITELIST).add(MekanismBlocks.STRUCTURAL_GLASS);
         getBuilder(PE_VEIN_SHOVEL).add(MekanismBlocks.SALT_BLOCK);
+        addCTM();
+    }
+
+    private void addCTM() {
+        getBuilder(MekanismTags.Blocks.CT_BOILER).add(
+              MekanismBlocks.BOILER_CASING,
+              MekanismBlocks.BOILER_VALVE
+        );
+        getBuilder(MekanismTags.Blocks.CT_MATRIX_EXTERIOR).add(
+              MekanismBlocks.INDUCTION_CASING,
+              MekanismBlocks.INDUCTION_PORT
+        );
+        getBuilder(MekanismTags.Blocks.CT_MATRIX_INTERIOR).add(
+              MekanismTags.BlockItems.INDUCTION_CELLS.block(),
+              MekanismTags.BlockItems.INDUCTION_PROVIDERS.block()
+        );
+        getBuilder(MekanismTags.Blocks.CT_TANK).add(
+              MekanismBlocks.DYNAMIC_TANK,
+              MekanismBlocks.DYNAMIC_VALVE
+        );
+        getBuilder(MekanismTags.Blocks.CT_TELEPORTER).add(
+              MekanismBlocks.TELEPORTER,
+              MekanismBlocks.TELEPORTER_FRAME
+        );
+        getBuilder(MekanismTags.Blocks.CT_TEP).add(
+              MekanismBlocks.THERMAL_EVAPORATION_BLOCK,
+              MekanismBlocks.THERMAL_EVAPORATION_VALVE,
+              MekanismBlocks.THERMAL_EVAPORATION_CONTROLLER
+        );
+        getBuilder(MekanismTags.Blocks.CT_SPS).add(
+              MekanismBlocks.SPS_CASING,
+              MekanismBlocks.SPS_PORT
+        );
+        getBuilder(MekanismTags.Blocks.CT_STRUCTURAL_GLASS).add(MekanismBlocks.STRUCTURAL_GLASS);
     }
 
     private void addEntities() {

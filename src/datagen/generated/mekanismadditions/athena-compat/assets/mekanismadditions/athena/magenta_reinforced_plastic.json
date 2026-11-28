@@ -1,0 +1,13 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismadditions:athena/ctm/reinforced_plastic_block/center",
+      "empty": "mekanismadditions:athena/ctm/reinforced_plastic_block/empty",
+      "horizontal": "mekanismadditions:athena/ctm/reinforced_plastic_block/horizontal",
+      "particle": "mekanismadditions:block/reinforced_plastic_block",
+      "vertical": "mekanismadditions:athena/ctm/reinforced_plastic_block/vertical"
+    }
+  },
+  "tint": 0
+}

@@ -5,6 +5,20 @@
         "neoforge:conditions": [
           {
             "type": "neoforge:mod_loaded",
+            "modid": "athena"
+          }
+        ],
+        "directory": "athena-compat",
+        "max_format": 97,
+        "min_format": [
+          97,
+          1
+        ]
+      },
+      {
+        "neoforge:conditions": [
+          {
+            "type": "neoforge:mod_loaded",
             "modid": "ae2"
           }
         ],

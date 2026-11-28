@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanism:connected_texture_connection/tep"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/thermal_evaporation_valve/center",
+      "empty": "mekanism:athena/ctm/thermal_evaporation_valve/empty",
+      "horizontal": "mekanism:athena/ctm/thermal_evaporation_valve/horizontal",
+      "particle": "mekanism:block/thermal_evaporation_valve",
+      "vertical": "mekanism:athena/ctm/thermal_evaporation_valve/vertical"
+    }
+  }
+}

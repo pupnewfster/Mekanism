@@ -1,0 +1,67 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanismgenerators:connected_texture_connection/fusion"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanismgenerators:athena/ctm/fusion_reactor_port/center",
+              "empty": "mekanismgenerators:athena/ctm/fusion_reactor_port/empty",
+              "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_port/horizontal",
+              "particle": "mekanismgenerators:block/fusion_reactor_port",
+              "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_port/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanismgenerators:block/fusion_reactor_port_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    },
+    "active=true": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanismgenerators:connected_texture_connection/fusion"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanismgenerators:athena/ctm/fusion_reactor_port_output/center",
+              "empty": "mekanismgenerators:athena/ctm/fusion_reactor_port_output/empty",
+              "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_port_output/horizontal",
+              "particle": "mekanismgenerators:block/fusion_reactor_port_output",
+              "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_port_output/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanismgenerators:block/fusion_reactor_port_output_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    }
+  }
+}

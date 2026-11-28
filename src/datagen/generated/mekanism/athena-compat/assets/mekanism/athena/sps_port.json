@@ -1,0 +1,67 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "active=false": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/sps"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/sps_port/center",
+              "empty": "mekanism:athena/ctm/sps_port/empty",
+              "horizontal": "mekanism:athena/ctm/sps_port/horizontal",
+              "particle": "mekanism:block/sps_port",
+              "vertical": "mekanism:athena/ctm/sps_port/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/sps_port_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    },
+    "active=true": {
+      "athena:loader": "athena:composite",
+      "models": [
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "tag",
+            "tag": "mekanism:connected_texture_connection/sps"
+          },
+          "ctm_textures": {
+            "default": {
+              "center": "mekanism:athena/ctm/sps_port_output/center",
+              "empty": "mekanism:athena/ctm/sps_port_output/empty",
+              "horizontal": "mekanism:athena/ctm/sps_port_output/horizontal",
+              "particle": "mekanism:block/sps_port_output",
+              "vertical": "mekanism:athena/ctm/sps_port_output/vertical"
+            }
+          }
+        },
+        {
+          "athena:loader": "athena:ctm",
+          "connect_to": {
+            "type": "false"
+          },
+          "ctm_textures": {
+            "default": "mekanism:block/sps_port_output_led"
+          },
+          "light_emission": 15
+        }
+      ]
+    }
+  }
+}

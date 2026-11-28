@@ -1,0 +1,10 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanism:connected_texture_connection/boiler"
+  },
+  "ctm_textures": {
+    "default": "mekanism:athena/ctm_full/boiler_casing"
+  }
+}

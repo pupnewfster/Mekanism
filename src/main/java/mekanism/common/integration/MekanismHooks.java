@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 public final class MekanismHooks {
 
     //Note: These have to be static for use in CraftTweaker/Mod entrypoint annotations
+    public static final String ATHENA_MOD_ID = "athena";
     public static final String CC_MOD_ID = "computercraft";
     public static final String CURIOS_MOD_ID = "curios";
     public static final String EMI_MOD_ID = "emi";
@@ -56,6 +57,7 @@ public final class MekanismHooks {
         }
     }
 
+    public final IntegrationInfo athena;
     public final IntegrationInfo computerCraft;
     public final IntegrationInfo craftTweaker;
     public final IntegrationInfo curios;
@@ -79,6 +81,7 @@ public final class MekanismHooks {
         ModList modList = ModList.get();
         //Note: The modlist is null when running tests
         Predicate<String> loadedCheck = modList == null ? _ -> false : modList::isLoaded;
+        athena = new IntegrationInfo(ATHENA_MOD_ID, loadedCheck);
         computerCraft = new IntegrationInfo(CC_MOD_ID, loadedCheck);
         craftTweaker = new IntegrationInfo("crafttweaker", loadedCheck);
         curios = new IntegrationInfo(CURIOS_MOD_ID, loadedCheck);

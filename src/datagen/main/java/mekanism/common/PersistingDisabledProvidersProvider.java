@@ -96,11 +96,16 @@ public class PersistingDisabledProvidersProvider implements DataProvider {
         fakeProviders.add("EMI Alias Provider: " + modid);
     }
 
-    public static void skipRecipeProvider(PackGenerator packGenerator, String directory) {
+    public static void skipNothingInSubPack(PackGenerator packGenerator) {
+        //Exists to prevent creating/removing persisting cache files when an integration changes from enabled to disabled or vice versa
+        packGenerator.createProvider(output -> new PersistingDisabledProvidersProvider(output.getOutputFolder().getParent(), Collections.emptySet(), Collections.emptyList()));
+    }
+
+    protected static void skipSubPack(PackGenerator packGenerator, Set<String> pathsToSkip, String providerName) {
         DataGenerator.PackGenerator internalGenerator = Objects.requireNonNull(INTERNAL_GENERATOR_FIELD.getValue(packGenerator));
         //Go up one level as the cache files for subpacks are not stored
-        packGenerator.createProvider(output -> new PersistingDisabledProvidersProvider(output.getOutputFolder().getParent(), Collections.singleton(directory), Collections.singletonList(
-              internalGenerator.providerPrefix + "/Registries for reloadable"
+        packGenerator.createProvider(output -> new PersistingDisabledProvidersProvider(output.getOutputFolder().getParent(), pathsToSkip, Collections.singletonList(
+              internalGenerator.providerPrefix + "/" + providerName
         )));
     }
 

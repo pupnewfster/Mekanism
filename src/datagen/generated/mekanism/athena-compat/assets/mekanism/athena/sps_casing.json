@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanism:connected_texture_connection/sps"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/sps_casing/center",
+      "empty": "mekanism:athena/ctm/sps_casing/empty",
+      "horizontal": "mekanism:athena/ctm/sps_casing/horizontal",
+      "particle": "mekanism:block/sps_casing",
+      "vertical": "mekanism:athena/ctm/sps_casing/vertical"
+    }
+  }
+}

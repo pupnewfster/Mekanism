@@ -1,0 +1,8 @@
+{
+  "values": [
+    "mekanismgenerators:fusion_reactor_frame",
+    "mekanismgenerators:fusion_reactor_logic_adapter",
+    "mekanismgenerators:fusion_reactor_port",
+    "mekanismgenerators:fusion_reactor_controller"
+  ]
+}

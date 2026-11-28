@@ -1,0 +1,13 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismadditions:athena/ctm/plastic_road/center",
+      "empty": "mekanismadditions:athena/ctm/plastic_road/empty",
+      "horizontal": "mekanismadditions:athena/ctm/plastic_road/horizontal",
+      "particle": "mekanismadditions:block/plastic_road",
+      "vertical": "mekanismadditions:athena/ctm/plastic_road/vertical"
+    }
+  },
+  "tint": 0
+}

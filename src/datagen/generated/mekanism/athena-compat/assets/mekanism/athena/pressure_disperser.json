@@ -1,0 +1,12 @@
+{
+  "athena:loader": "athena:ctm",
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/pressure_disperser/center",
+      "empty": "mekanism:athena/ctm/pressure_disperser/empty",
+      "horizontal": "mekanism:athena/ctm/pressure_disperser/horizontal",
+      "particle": "mekanism:block/pressure_disperser",
+      "vertical": "mekanism:athena/ctm/pressure_disperser/vertical"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanism:connected_texture_connection/structural_glass"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/structural_glass/center",
+      "empty": "mekanism:athena/ctm/structural_glass/empty",
+      "horizontal": "mekanism:athena/ctm/structural_glass/horizontal",
+      "particle": "mekanism:block/structural_glass",
+      "vertical": "mekanism:athena/ctm/structural_glass/vertical"
+    }
+  }
+}

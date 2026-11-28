@@ -7,6 +7,7 @@ import mekanism.additions.common.registries.AdditionsBlocks;
 import mekanism.additions.common.registries.AdditionsDataComponents;
 import mekanism.additions.common.registries.AdditionsEntityTypes;
 import mekanism.additions.common.registries.AdditionsItems;
+import mekanism.api.text.EnumColor;
 import mekanism.api.text.EnumColorCollection;
 import mekanism.common.registration.impl.BlockRegistryObject;
 import mekanism.common.tag.BaseTagProvider;
@@ -56,11 +57,32 @@ public class AdditionsTagProvider extends BaseTagProvider {
         addGlowPanels();
         addPlasticBlocks();
         addHarvestRequirements();
+        addCTM();
         getBuilder(BlockTags.IMPERMEABLE).add(AdditionsBlocks.TRANSPARENT_PLASTIC_BLOCKS);
         getBuilder(BlockTags.BLOCKS_MOTION_NO_LEAVES)
               //Note: Plastic fences, fence gates, slabs, and stairs are already covered by vanilla adding the corresponding base tags to BLOCKS_MOTION_NO_LEAVES
               .addAsBlocks(AdditionsTags.BlockItems.PLASTIC_BLOCKS, AdditionsTags.BlockItems.GLOW_PANELS)
               .add(AdditionsBlocks.OBSIDIAN_TNT);
+    }
+
+    private void addCTM() {
+        for (EnumColor color : EnumColor.VALUES) {
+            getBuilder(AdditionsTags.Blocks.CT_PLASTIC_GLOW.pick(color)).add(
+                  AdditionsBlocks.PLASTIC_GLOW_BLOCKS.pick(color),
+                  AdditionsBlocks.PLASTIC_GLOW_SLABS.pick(color),
+                  AdditionsBlocks.PLASTIC_GLOW_STAIRS.pick(color)
+            );
+            getBuilder(AdditionsTags.Blocks.CT_PLASTIC_PLASTIC.pick(color)).add(
+                  AdditionsBlocks.PLASTIC_BLOCKS.pick(color),
+                  AdditionsBlocks.PLASTIC_SLABS.pick(color),
+                  AdditionsBlocks.PLASTIC_STAIRS.pick(color)
+            );
+            getBuilder(AdditionsTags.Blocks.CT_PLASTIC_TRANSPARENT.pick(color)).add(
+                  AdditionsBlocks.TRANSPARENT_PLASTIC_BLOCKS.pick(color),
+                  AdditionsBlocks.TRANSPARENT_PLASTIC_SLABS.pick(color),
+                  AdditionsBlocks.TRANSPARENT_PLASTIC_STAIRS.pick(color)
+            );
+        }
     }
 
     private void addEntities() {

@@ -253,6 +253,19 @@ public class MekanismTags {
         public static final TagKey<Block> CHESTS_PERSONAL = commonTag("chests/personal");
         public static final TagKey<Block> BARRELS_PERSONAL = commonTag("barrels/personal");
 
+        public static final TagKey<Block> CT_BOILER = connectionTag("boiler");
+        public static final TagKey<Block> CT_MATRIX_EXTERIOR = connectionTag("matrix/exterior");
+        public static final TagKey<Block> CT_MATRIX_INTERIOR = connectionTag("matrix/interior");
+        public static final TagKey<Block> CT_SPS = connectionTag("sps");
+        public static final TagKey<Block> CT_STRUCTURAL_GLASS = connectionTag("structural_glass");
+        public static final TagKey<Block> CT_TANK = connectionTag("tank");
+        public static final TagKey<Block> CT_TELEPORTER = connectionTag("teleporter");
+        public static final TagKey<Block> CT_TEP = connectionTag("tep");
+
+        private static TagKey<Block> connectionTag(String name) {
+            return tag("connected_texture_connection/" + name);
+        }
+
         private static TagKey<Block> commonTag(String name) {
             return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
         }

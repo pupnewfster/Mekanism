@@ -1,0 +1,41 @@
+{
+  "athena:loader": "athena:composite",
+  "models": [
+    {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanism:connected_texture_connection/matrix/interior"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanism:athena/ctm/elite_induction_provider/center",
+          "empty": "mekanism:athena/ctm/elite_induction_provider/empty",
+          "horizontal": "mekanism:athena/ctm/elite_induction_provider/horizontal",
+          "particle": "mekanism:block/elite_induction_provider",
+          "vertical": "mekanism:athena/ctm/elite_induction_provider/vertical"
+        }
+      }
+    },
+    {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "false"
+      },
+      "ctm_textures": {
+        "default": "mekanism:block/induction_cell_glow"
+      },
+      "light_emission": 9
+    },
+    {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "false"
+      },
+      "ctm_textures": {
+        "default": "mekanism:block/elite_induction_provider_led"
+      },
+      "light_emission": 15
+    }
+  ]
+}

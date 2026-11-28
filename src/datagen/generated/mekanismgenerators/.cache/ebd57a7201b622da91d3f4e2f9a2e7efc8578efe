@@ -1,4 +1,4 @@
-// 26.3	2026-11-06T15:29:46.0842624	mekanismgenerators-global/Tags: mekanismgenerators
+// 26.3	2026-11-27T13:07:00.2101074	mekanismgenerators-global/Tags: mekanismgenerators
 51c625436874fdd2506b20267e03dabf44c090b0 data/create/tags/fluid/no_infinite_draining.json
 bcd21ce2046a3b918a45281848276b4479c761dd data/c/tags/fluid/bioethanol.json
 caa388bf7134c013888de340917b3323e5ee67cc data/c/tags/fluid/deuterium.json
@@ -10,6 +10,10 @@ e2a5f1e2e87e4d710f560c0c2feb3c7d1b95b6da data/c/tags/item/buckets/fusion_fuel.js
 1b49261b0faee223ee3383eda35c914c14bc82ff data/c/tags/item/buckets/tritium.json
 235deeb52239ce6ab2ad8d5e7fa519bf9ab722a4 data/framedblocks/tags/block/blockentity_whitelisted.json
 235deeb52239ce6ab2ad8d5e7fa519bf9ab722a4 data/framedblocks/tags/block/frameable.json
+245559b6f726cbb091eb4e1a70e2c399079c8376 data/mekanismgenerators/tags/block/connected_texture_connection/fission.json
+e6b78b26d0aabcc0d5876131637c7efb9060e5b7 data/mekanismgenerators/tags/block/connected_texture_connection/fusion.json
+235deeb52239ce6ab2ad8d5e7fa519bf9ab722a4 data/mekanismgenerators/tags/block/connected_texture_connection/reactor_glass.json
+4a6372ea6ee1bb52d5114cd78a4c9b92200843ce data/mekanismgenerators/tags/block/connected_texture_connection/turbine.json
 b9275b9add83a131f74dd13901e816629d6a4d49 data/mekanismgenerators/tags/block/structures/reactors.json
 d117d0b822a79babda4398afa701c307ea18d1d1 data/mekanismgenerators/tags/block/structures/reactors/fission.json
 75074449febc198b0793ade72b55068274f31897 data/mekanismgenerators/tags/block/structures/reactors/fusion.json

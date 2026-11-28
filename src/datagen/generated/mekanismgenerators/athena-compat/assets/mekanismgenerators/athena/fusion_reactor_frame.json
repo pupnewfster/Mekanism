@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanismgenerators:connected_texture_connection/fusion"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanismgenerators:athena/ctm/fusion_reactor_frame/center",
+      "empty": "mekanismgenerators:athena/ctm/fusion_reactor_frame/empty",
+      "horizontal": "mekanismgenerators:athena/ctm/fusion_reactor_frame/horizontal",
+      "particle": "mekanismgenerators:block/fusion_reactor_frame",
+      "vertical": "mekanismgenerators:athena/ctm/fusion_reactor_frame/vertical"
+    }
+  }
+}

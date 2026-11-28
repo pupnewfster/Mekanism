@@ -1,0 +1,53 @@
+{
+  "athena:loader": "athena:variants",
+  "variants": {
+    "mode=input": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanismgenerators:connected_texture_connection/fission"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanismgenerators:athena/ctm/fission_reactor_port_input/center",
+          "empty": "mekanismgenerators:athena/ctm/fission_reactor_port_input/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fission_reactor_port_input/horizontal",
+          "particle": "mekanismgenerators:block/fission_reactor_port_input",
+          "vertical": "mekanismgenerators:athena/ctm/fission_reactor_port_input/vertical"
+        }
+      }
+    },
+    "mode=output_coolant": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanismgenerators:connected_texture_connection/fission"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanismgenerators:athena/ctm/fission_reactor_port_output_coolant/center",
+          "empty": "mekanismgenerators:athena/ctm/fission_reactor_port_output_coolant/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fission_reactor_port_output_coolant/horizontal",
+          "particle": "mekanismgenerators:block/fission_reactor_port_output_coolant",
+          "vertical": "mekanismgenerators:athena/ctm/fission_reactor_port_output_coolant/vertical"
+        }
+      }
+    },
+    "mode=output_waste": {
+      "athena:loader": "athena:ctm",
+      "connect_to": {
+        "type": "tag",
+        "tag": "mekanismgenerators:connected_texture_connection/fission"
+      },
+      "ctm_textures": {
+        "default": {
+          "center": "mekanismgenerators:athena/ctm/fission_reactor_port_output_waste/center",
+          "empty": "mekanismgenerators:athena/ctm/fission_reactor_port_output_waste/empty",
+          "horizontal": "mekanismgenerators:athena/ctm/fission_reactor_port_output_waste/horizontal",
+          "particle": "mekanismgenerators:block/fission_reactor_port_output_waste",
+          "vertical": "mekanismgenerators:athena/ctm/fission_reactor_port_output_waste/vertical"
+        }
+      }
+    }
+  }
+}

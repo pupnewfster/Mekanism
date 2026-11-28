@@ -1,5 +1,7 @@
 package mekanism.generators.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import mekanism.common.MekanismDataGenerator;
 import mekanism.common.PersistingDisabledProvidersProvider;
 import mekanism.generators.client.GeneratorsLangProvider;
@@ -10,12 +12,13 @@ import mekanism.generators.client.integration.emi.GeneratorsEmiDefaults;
 import mekanism.generators.client.recipe_viewer.alias.GeneratorsAliasMapping;
 import mekanism.generators.common.loot.GeneratorsBlockLootTables;
 import net.minecraft.data.loot.LootTableProvider.SubProviderEntry;
-import net.minecraft.data.metadata.PackMetadataGenerator;
+import net.minecraft.server.packs.OverlayMetadataSection.OverlayEntry;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.data.event.PackGenerator;
@@ -28,9 +31,12 @@ public class GeneratorsDataGenerator {
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
+        List<WithConditions<OverlayEntry>> overlays = new ArrayList<>();
+        //Add Athena resource pack overlays
+        MekanismDataGenerator.registerAthenaOverride(event, overlays);
         PackGenerator packGenerator = event.getDefaultPackGenerator();
         //Client side data generators
-        packGenerator.createProvider(output -> PackMetadataGenerator.forFeaturePack(output, GeneratorsLang.PACK_DESCRIPTION.translate()));
+        packGenerator.createProvider(output -> MekanismDataGenerator.forModPack(output, GeneratorsLang.PACK_DESCRIPTION, overlays));
         packGenerator.createProvider(GeneratorsLangProvider::new);
         packGenerator.createProvider(GeneratorsSoundProvider::new);
         packGenerator.createProvider(output -> new GeneratorsModelProvider(output, event.getResourceManager(PackType.CLIENT_RESOURCES)));

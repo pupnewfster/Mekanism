@@ -1,0 +1,16 @@
+{
+  "athena:loader": "athena:ctm",
+  "connect_to": {
+    "type": "tag",
+    "tag": "mekanism:connected_texture_connection/tank"
+  },
+  "ctm_textures": {
+    "default": {
+      "center": "mekanism:athena/ctm/dynamic_tank/center",
+      "empty": "mekanism:athena/ctm/dynamic_tank/empty",
+      "horizontal": "mekanism:athena/ctm/dynamic_tank/horizontal",
+      "particle": "mekanism:block/dynamic_tank",
+      "vertical": "mekanism:athena/ctm/dynamic_tank/vertical"
+    }
+  }
+}

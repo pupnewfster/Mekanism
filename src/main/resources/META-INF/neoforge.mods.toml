@@ -31,6 +31,12 @@ licenseURL = "https://github.com/mekanism/Mekanism#license"
     ordering="NONE"
     side="BOTH"
 [[dependencies.mekanism]]
+    modId="athena"
+    type="optional"
+    versionRange="${athena_version}"
+    ordering="NONE"
+    side="CLIENT"
+[[dependencies.mekanism]]
     modId="nerb"
     type="optional"
     versionRange="${nerb_version}"
